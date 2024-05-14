@@ -85,10 +85,10 @@ class FarmQuerySet(models.QuerySet):
             >>> group_summary_by_criteria('method_name')
             <QuerySet [{'name': 'criteria_name', 'value': 123}, ...]>
         """
-        # queryset = DeforestationSummary.objects.filter(
-        #     farm__in=self, **FarmFilter[method])
-        # return queryset.values('name').annotate(value=Sum('value'))
-        return {}
+        DeforestationSummary = self.model.deforestation_summaries.field.model
+        queryset = DeforestationSummary.objects.filter(
+            farm__in=self, **FarmFilter[method])
+        return queryset.values('name').annotate(value=Sum('value'))
     
     def filter_by_request(self, request):
         """

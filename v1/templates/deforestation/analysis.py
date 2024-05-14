@@ -24,7 +24,7 @@ def format_data(r, f, e):
     data = {}
 
     # Iterate over v1 and v2 to populate the dictionary
-    for d in r + f + e:
+    for d in r, f , e:
         name = d['name']
         value = d['value']
         if name not in data:
