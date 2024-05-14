@@ -43,7 +43,7 @@ class FarmQuerySet(models.QuerySet):
         QuerySet: A QuerySet of farms annotated with the 'primary_forest_area' 
             field.
         """
-        return self.aaggregate(
+        return self.aggregate(
             primary_forest_area=Avg('oproperty__primary_forest_area')
             )["primary_forest_area"]
     
@@ -67,7 +67,7 @@ class FarmQuerySet(models.QuerySet):
         QuerySet: A QuerySet of farms annotated with the 'protected_area' 
             field.
         """
-        return self.aaggregate(
+        return self.aggregate(
             protected_area=Avg('property__protected_area')
             )["protected_area"]
     
