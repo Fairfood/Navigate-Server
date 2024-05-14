@@ -36,11 +36,13 @@ def format_data(r, f, e):
         else:
             data[name].append(value)
 
-    for sublist in data:
+    # Convert the dictionary to the desired format
+    data_list = [[name] + values for name, values in data.items()]
+
+    for sublist in data_list:
         sublist.extend([0] * (3 - len(sublist)))
 
-    # Convert the dictionary to the desired format
-    return [[name] + values for name, values in data.items()]
+    return data_list
 
 
 
