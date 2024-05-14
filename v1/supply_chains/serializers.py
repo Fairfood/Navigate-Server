@@ -1,9 +1,10 @@
 from rest_framework import serializers
+from base.serializers import IDModelSerializer
 
 from .models.nodes import Company, Farmer
 from .models.batches import Batch
 
-class CompanySerializer(serializers.ModelSerializer):
+class CompanySerializer(IDModelSerializer):
     """
     Serializer class for the Company model.
     """
@@ -21,7 +22,7 @@ class CompanySerializer(serializers.ModelSerializer):
         return obj.farmers.values_list('country', flat=True).distinct()
 
 
-class FarmerSerializer(serializers.ModelSerializer):
+class FarmerSerializer(IDModelSerializer):
     """
     Serializer class for the Farmer model.
     """
@@ -30,7 +31,7 @@ class FarmerSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class BatchSerializer(serializers.ModelSerializer):
+class BatchSerializer(IDModelSerializer):
     """
     Serializer class for the Batch model.
     """

@@ -1,9 +1,9 @@
-from rest_framework import serializers
+from base import serializers
 
 from .models import Farm
 from .models import FarmComment
 
-class FarmSerializer(serializers.ModelSerializer):
+class FarmSerializer(serializers.IDModelSerializer):
     """
     Serializer class for the Farm model.
     """
@@ -11,7 +11,7 @@ class FarmSerializer(serializers.ModelSerializer):
         model = Farm
         fields = '__all__'
 
-class FarmCommentSerializer(serializers.ModelSerializer):
+class FarmCommentSerializer(serializers.IDModelSerializer):
     """
     Serializer class for the FarmComment model.
     """
