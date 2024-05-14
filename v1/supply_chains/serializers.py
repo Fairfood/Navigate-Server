@@ -1,8 +1,16 @@
 from rest_framework import serializers
 from base.serializers import IDModelSerializer
 
-from .models.nodes import Company, Farmer
+from .models.nodes import Company, Farmer, SupplyChain
 from .models.batches import Batch
+
+class SupplyChainSerializer(IDModelSerializer):
+    """
+    
+    """
+    class Meta:
+        model = SupplyChain
+        fields = '__all__'
 
 class CompanySerializer(IDModelSerializer):
     """
@@ -10,6 +18,7 @@ class CompanySerializer(IDModelSerializer):
     """
     
     farmer_countries = serializers.SerializerMethodField()
+    supply_chains = SupplyChainSerializer(many=True, read_only=True)
 
     class Meta:
         model = Company
