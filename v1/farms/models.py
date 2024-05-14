@@ -2,7 +2,6 @@ from django.db import models
 from base.models import AbstractAddressModel
 from base.models import AbstractBaseModel
 from base.db import LatLongField
-from base.db import GeoJSONField
 from v1.supply_chains.models.nodes import Farmer
 from .managers import FarmQuerySet
 from .managers import FarmCommentQuerySet
@@ -26,7 +25,7 @@ class Farm(AbstractAddressModel):
                                related_name="farms")
     external_id = models.CharField(max_length=255)
     latlong = LatLongField(blank=True, null=True)
-    geo_json = GeoJSONField(blank=True, null=True)
+    geo_json = models.JSONField(blank=True, null=True)
     analysis_radius = models.FloatField(null=True, blank=True)
 
     objects = FarmQuerySet.as_manager()
