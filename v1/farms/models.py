@@ -6,6 +6,7 @@ from v1.supply_chains.models.nodes import Farmer
 from .managers import FarmQuerySet
 from .managers import FarmCommentQuerySet
 from .constants import Pillers
+from .constants import FarmType
 
 class Farm(AbstractAddressModel):
     """
@@ -20,7 +21,7 @@ class Farm(AbstractAddressModel):
         analysis_radius (float): The analysis radius of the farm.
     """
 
-    farm_type = models.CharField(max_length=255)
+    farm_type = models.CharField(max_length=255, choices=FarmType.choices)
     farmer = models.ForeignKey(Farmer, on_delete=models.CASCADE, 
                                related_name="farms")
     external_id = models.CharField(max_length=255)
