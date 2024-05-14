@@ -7,6 +7,7 @@ from .models.nodes import SupplyChain
 from .models.nodes import Company
 from .models.nodes import Farmer
 
+@admin.register(User)
 class NavigateUserAdmin(UserAdmin):
     """
     Custom admin class for managing SSO users.
