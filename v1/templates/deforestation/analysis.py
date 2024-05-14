@@ -117,4 +117,81 @@ def get_data(queryset):
                 "id": c + 1,
                 "values": item
             })
-    return response
+    
+    return {
+        "impact": [
+        {
+            "name": "Overall",
+            "is_passed" : False,
+            "indexes": [
+                {
+                    "name": "Total tree area lost",
+                    "is_passed": False
+                },
+                {
+                    "name": "Deforesation event count",
+                    "is_passed": False
+                },
+                {
+                    "name": "Deforesation event share",
+                    "is_passed": True
+                }
+            ]
+        },
+        {
+            "name": "Rainforest Alliance",
+            "is_passed" : False,
+            "indexes": [
+                {
+                    "name": "Total tree area lost",
+                    "is_passed": False
+                },
+                {
+                    "name": "Deforesation event count",
+                    "is_passed": False
+                },
+                {
+                    "name": "Deforesation event share",
+                    "is_passed": True
+                }
+            ]
+        },
+        {
+            "name": "Fairtrade",
+            "is_passed" : False,
+            "indexes": [
+                {
+                    "name": "Total tree area lost",
+                    "is_passed": False
+                },
+                {
+                    "name": "Deforesation event count",
+                    "is_passed": False
+                },
+                {
+                    "name": "Deforesation event share",
+                    "is_passed": True
+                }
+            ]
+        },
+        {
+            "name": "EUDR",
+            "is_passed" : True,
+            "indexes": [
+                {
+                    "name": "Total tree area lost",
+                    "is_passed": True
+                },
+                {
+                    "name": "Deforesation event count",
+                    "is_passed": True
+                },
+                {
+                    "name": "Deforesation event share",
+                    "is_passed": True
+                }
+            ]
+        }
+    ],
+    "analysis": response
+    }
