@@ -78,7 +78,7 @@ class StatAPIView(APIView):
         piller = request.GET.get('piller')
         if not piller:
             raise ValidationError("Piller is required.")
-        if piller not in Pillers.labels():
+        if piller not in Pillers.labels:
             raise ValidationError("Enter valid piller.")
         queryset = Farm.objects.filter_by_request(request)
         proccessor = importlib.import_module(template_files[piller])
@@ -125,7 +125,7 @@ class AnalysisView(APIView):
         piller = request.GET.get('piller')
         if not piller:
             raise ValidationError("Piller is required.")
-        if piller not in Pillers.labels():
+        if piller not in Pillers.labels:
             raise ValidationError("Enter valid piller.")
         queryset = Farm.objects.filter_by_request(request)
         proccessor = importlib.import_module(template_files[piller])
