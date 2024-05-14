@@ -40,7 +40,7 @@ def format_data(r, f, e):
     data_list = [[name] + values for name, values in data.items()]
 
     for sublist in data_list:
-        sublist.extend([0] * (3 - len(sublist)))
+        sublist.extend([0] * (4 - len(sublist)))
 
     return data_list
 
