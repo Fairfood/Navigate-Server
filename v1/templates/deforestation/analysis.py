@@ -22,9 +22,13 @@ def format_data(r, f, e):
     """
     # Create a dictionary to store values for each name
     data = {}
+    
+    single_list = []
+    for i in [r, f, e]:
+        single_list.extend(list(i))
 
     # Iterate over v1 and v2 to populate the dictionary
-    for d in r, f , e:
+    for d in single_list:
         name = d['name']
         value = d['value']
         if name not in data:
