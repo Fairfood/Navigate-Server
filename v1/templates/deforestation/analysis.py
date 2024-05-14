@@ -32,6 +32,9 @@ def format_data(r, f, e):
         else:
             data[name].append(value)
 
+    for sublist in data:
+        sublist.extend([0] * (3 - len(sublist)))
+
     # Convert the dictionary to the desired format
     return [[name] + values for name, values in data.items()]
 
@@ -61,7 +64,7 @@ def get_data(queryset):
 
     data = format_data(rainorest_allience, fairtrade, eudr)
 
-    return {
+    response  = {
         "title": _("Summary of deforestation"),
         "description": _("Tradin employs risk assessment criteria that include"
                          " a 113-meter radius for tree cover loss evaluation "
@@ -99,18 +102,13 @@ def get_data(queryset):
                           "loss are considered unacceptable.")
             }
         ],
-        "rows": [
-            {
-                "id": 1,
-                "values": data[0]
-            },
-            {
-                "id": 2,
-                "values": data[1],
-            },
-            {
-                "id": 3,
-                "values": data[2],
-            }
-        ]
+        "rows": []
     }
+
+    for c, item in enumerate(data):
+        response["rows"].append( 
+            {
+                "id": c + 1,
+                "values": item
+            })
+    return response
