@@ -44,7 +44,7 @@ class FarmQuerySet(models.QuerySet):
             field.
         """
         return self.aggregate(
-            primary_forest_area=Avg('oproperty__primary_forest_area')
+            primary_forest_area=Avg('property__primary_forest_area')
             )["primary_forest_area"]
     
     def tree_cover_extent(self):
