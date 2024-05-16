@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework import viewsets
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
+from rest_framework.decorators import action
 
 from .models import Farm
 from .models import FarmComment
@@ -30,6 +31,21 @@ class FarmViewSet(viewsets.ModelViewSet):
 
         """
         return super().get_queryset().filter_by_request(self.request)
+    
+    @action(methods=['get'], detail=False, url_path='geoj_sons'))
+    def geoj_sons(self, request):
+        """
+        Returns the geo_json values of the queryset.
+
+        Args:
+            request: The HTTP request object.
+
+        Returns:
+            A Response object containing the geo_json values of the queryset.
+        """
+        queryset = self.get_queryset()
+        data = queryset.values_list('geo_json', flat=True)
+        return Response(data)
     
 class FarmCommentViewSet(viewsets.ModelViewSet):
     """
