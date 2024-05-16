@@ -32,7 +32,7 @@ class FarmViewSet(viewsets.ModelViewSet):
         """
         return super().get_queryset().filter_by_request(self.request)
     
-    @action(methods=['get'], detail=False, url_path='geoj_sons'))
+    @action(methods=['get'], detail=False, url_path='geo-jsons')
     def geoj_sons(self, request):
         """
         Returns the geo_json values of the queryset.
