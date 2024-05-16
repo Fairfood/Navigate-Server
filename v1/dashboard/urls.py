@@ -8,7 +8,7 @@ router.register('interventions',
                 views.InterventionView, basename='interventions')
 
 urlpatterns = [
-    path('themes/<str:pk>', views.ThemeView.as_view(), name='themes'),
+    path('themes/<str:pk>/', views.ThemeView.as_view(), name='themes'),
 ]
 
 urlpatterns += router.urls
