@@ -2,12 +2,39 @@ from django.db import models
 from base.models import AbstractBaseModel
 
 from v1.supply_chains.models.nodes import Company
+from . import constants
 
 class Theme(AbstractBaseModel):
+    """
+    Represents a theme for a company in the dashboard.
+
+    Attributes:
+        company (ForeignKey): The company associated with the theme.
+        name (CharField): The name of the theme.
+        title (CharField): The title of the theme.
+        primary_color (CharField): The primary color of the theme.
+        primary_light_color (CharField): The light version of the primary 
+            color.
+        secondary_color (CharField): The secondary color of the theme.
+        stroke_color (CharField): The stroke color of the theme.
+        first_font_color (CharField): The first font color of the theme.
+        second_font_color (CharField): The second font color of the theme.
+        third_font_color (CharField): The third font color of the theme.
+        info_color (CharField): The info color of the theme.
+    """
+
     company = models.ForeignKey(Company, on_delete=models.CASCADE, 
                                 related_name="themes")
     name = models.CharField(max_length=255)
-    color = models.CharField(max_length=8)
+    title = models.CharField(max_length=255, default=constants.THEME_TITLE)
+    primary_color = models.CharField(max_length=7)
+    primary_light_color = models.CharField(max_length=7)
+    secondary_color = models.CharField(max_length=7)
+    stroke_color = models.CharField(max_length=7)
+    first_font_color = models.CharField(max_length=7)
+    second_font_color = models.CharField(max_length=7)
+    third_font_color = models.CharField(max_length=7)
+    info_color = models.CharField(max_length=7)
 
     def __str__(self) -> str:
         return f'{self.name}:{self.company}'
