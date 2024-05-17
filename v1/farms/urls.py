@@ -7,10 +7,10 @@ router = DefaultRouter()
 router.register('farms', views.FarmViewSet, basename='farm')
 router.register('farm-comments', views.FarmCommentViewSet, 
                 basename='farm-comments')
+router.register('analysis', views.AnalysisViewSet,basename='analysis')
 
 urlpatterns = [
     path('stats/', views.StatAPIView.as_view(), name='stats'),
-    path('analysis/', views.AnalysisView.as_view(), name='analysis')
 ]
 
 urlpatterns += router.urls

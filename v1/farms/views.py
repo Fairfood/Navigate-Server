@@ -32,6 +32,7 @@ class FarmViewSet(viewsets.ModelViewSet):
         """
         return super().get_queryset().filter_by_request(self.request)
     
+    
     @action(methods=['get'], detail=False, url_path='geo-jsons')
     def geoj_sons(self, request):
         """
@@ -100,7 +101,7 @@ class StatAPIView(APIView):
         proccessor = importlib.import_module(template_files[piller])
         return Response(proccessor.stats.get_data(queryset))
 
-class AnalysisView(APIView):
+class AnalysisViewSet(viewsets.ViewSet):
     """
     A view for performing analysis on farms based on the provided 'piller' 
     parameter.
@@ -146,6 +147,28 @@ class AnalysisView(APIView):
         queryset = Farm.objects.filter_by_request(request)
         proccessor = importlib.import_module(template_files[piller])
         return Response(proccessor.analysis.get_data(queryset))
+    
+    @action(methods=['get'], detail=False, url_path='detail')
+    def detail(self, request):
+        """
+        Returns the detail data of the queryset.
+
+        Args:
+            request: The HTTP request object.
+
+        Returns:
+            A Response object containing the detail data of the queryset.
+        """
+        piller = request.GET.get('piller')
+        if not piller:
+            raise ValidationError("Piller is required.")
+        if piller not in Pillers.values:
+            raise ValidationError("Enter valid piller.")
+        queryset = Farm.objects.filter_by_request(request)
+        proccessor = importlib.import_module(template_files[piller])
+        return Response(proccessor.analysis_detail.get_data(queryset))
+    
+
 
         
 
