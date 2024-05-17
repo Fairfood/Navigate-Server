@@ -30,7 +30,7 @@ def get_data(queryset):
     comments_dict = defaultdict(list)
 
     for comment in comments:
-        farm = comment.pop("farm")
+        farm = comment.pop("farm__external_id")
         comments_dict[farm].append(comment)
     
     return {
