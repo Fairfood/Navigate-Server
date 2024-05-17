@@ -148,8 +148,8 @@ class AnalysisViewSet(viewsets.ViewSet):
         proccessor = importlib.import_module(template_files[piller])
         return Response(proccessor.analysis.get_data(queryset))
     
-    @action(methods=['get'], detail=False, url_path='detail')
-    def detail(self, request):
+    @action(methods=['get'], detail=False, url_path='details')
+    def details(self, request):
         """
         Returns the detail data of the queryset.
 
