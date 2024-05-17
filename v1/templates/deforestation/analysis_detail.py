@@ -12,7 +12,7 @@ def get_data(queryset):
             filter=Q(comments__piller=Pillers.DEFORESTATION)
         )).values_list(
             "external_id", 
-            "commodity", 
+            "farmer__supply_chains__name", 
             "property__total_area", 
             "property__tree_cover_extent", 
             "state", 
