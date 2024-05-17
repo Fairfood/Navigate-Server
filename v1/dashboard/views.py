@@ -48,7 +48,7 @@ class InterventionView(viewsets.ModelViewSet):
         data = {
             "title": processor.INTERVENTIONS_TITTLE,
             "description": processor.INTERVENTIONS_DESCRIPTION,
-            "interventions": response.data
+            "interventions": response.data.get("results")
         }
         return Response(data)
         
