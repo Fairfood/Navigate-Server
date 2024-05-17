@@ -62,7 +62,7 @@ class Intervention(AbstractBaseModel):
     description = models.CharField(max_length=500)
     short_description = models.CharField(max_length=255)
     more_url = models.URLField(null=True, blank=True)
-    image = models.ImageField(upload_to="intervention_images", 
+    image = models.FileField(upload_to="intervention_images", 
                               null=True, blank=True)
     
     def __str__(self) -> str:

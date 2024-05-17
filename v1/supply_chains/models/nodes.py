@@ -43,7 +43,7 @@ class Company(AbstractAddressModel):
         pillers (JSONField): A field to store the company's pillers.
     """
 
-    image = models.ImageField(upload_to="company_images", 
+    image = models.FileField(upload_to="company_images", 
                               null=True, blank=True)
     name = models.CharField(max_length=255)
     users = models.ManyToManyField(
@@ -77,7 +77,7 @@ class Farmer(AbstractAddressModel):
 
     """
 
-    image = models.ImageField(upload_to="farmer_images", null=True, blank=True)
+    image = models.FileField(upload_to="farmer_images", null=True, blank=True)
     external_id = models.CharField(max_length=255, null=True, blank=True)
     name = models.CharField(max_length=255)
     company = models.ForeignKey(
