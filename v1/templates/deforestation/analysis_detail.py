@@ -32,7 +32,7 @@ def get_data(queryset):
     for comment in comments:
         farm = comment.pop("farm__external_id")
         comments_dict[farm].append(comment)
-    
+
     return {
         "title": _("Tree cover loss events"),
         "description": _("Tree cover loss events describe the "
@@ -59,8 +59,10 @@ def get_data(queryset):
                 "Note"
             ],
             "rows": [
-                      items for items in data  
+                        {
+                            "values": items,
+                            "comments": comments_dict[items[0]]
+                        } for items in data  
                     ],
-            "comments": comments_dict 
             }  
     }
