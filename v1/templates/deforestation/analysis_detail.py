@@ -2,7 +2,10 @@ from django.utils.translation import gettext as _
 from django.db.models import Count
 from django.db.models import Q
 
+from collections import defaultdict
+
 from ...farms.constants import Pillers
+from ...farms.models import FarmComment
 from .analysis import Methods
 
 def get_data(queryset):
@@ -20,6 +23,15 @@ def get_data(queryset):
             "country", 
             "comments_count"
         )
+    comments_qs = FarmComment.objects.filter(farm__in=queryset, 
+                                             piller=Pillers.DEFORESTATION)
+    comments = comments_qs.values("farm__external_id", "comment","file",
+                                  "source")
+    comments_dict = defaultdict(list)
+
+    for comment in comments:
+        farm = comment.pop("farm")
+        comments_dict[farm].append(comment)
     
     return {
         "title": _("Tree cover loss events"),
@@ -49,5 +61,5 @@ def get_data(queryset):
             "rows": [
                       items for items in data  
                     ]
-                }
+                }   
     }
