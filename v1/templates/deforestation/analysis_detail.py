@@ -5,7 +5,6 @@ from django.db.models import Q
 from collections import defaultdict
 
 from ...farms.constants import Pillers
-from ...farms.models import FarmComment
 from .analysis import Methods
 
 def get_data(queryset):
@@ -23,6 +22,7 @@ def get_data(queryset):
             "country", 
             "comments_count"
         )
+    FarmComment = queryset.model.comments.field.model
     comments_qs = FarmComment.objects.filter(farm__in=queryset, 
                                              piller=Pillers.DEFORESTATION)
     comments = comments_qs.values("farm__external_id", "comment","file",
