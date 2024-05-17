@@ -124,7 +124,7 @@ class AnalysisViewSet(viewsets.ViewSet):
         ValidationError: If the 'piller' parameter is not provided or is not a 
         valid value.
     """
-    def get(self, request):
+    def list(self, request):
         """
         Handle GET requests.
 
