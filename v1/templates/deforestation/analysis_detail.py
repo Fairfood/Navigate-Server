@@ -3,6 +3,7 @@ from django.db.models import Count
 from django.db.models import Q
 
 from ...farms.constants import Pillers
+from .analysis import Methods
 
 def get_data(queryset):
     queryset = queryset.filter(property__isnull=False)
@@ -35,6 +36,7 @@ def get_data(queryset):
                             "conservation and climate change "
                             "mitigation."),
         "table": {
+            "methods": Methods.values,
             "head": [
                 "Polygon ID",
                 "Commodity",
