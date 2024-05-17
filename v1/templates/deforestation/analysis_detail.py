@@ -60,6 +60,7 @@ def get_data(queryset):
             ],
             "rows": [
                       items for items in data  
-                    ]
-                }   
+                    ],
+            "comments": comments_dict 
+            }  
     }
