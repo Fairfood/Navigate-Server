@@ -121,7 +121,7 @@ class JWTAuthentication(BaseAuthentication):
         self.request.session['user_type'] = token.get('user_type')
         self.request.session['email_verified'] = token.get('email_verified')
         
-        self.set_session()
+        self.set_session(user)
         
         return (user, key)
 
@@ -223,8 +223,8 @@ class JWTAuthentication(BaseAuthentication):
             format=serialization.PublicFormat.SubjectPublicKeyInfo
         ).decode('utf-8')
 
-    def set_session(self):
+    def set_session(self, user):
         """Sets the user and company IDs to the session."""
-        session.set_to_local("user_id", self.request.user.pk)
+        session.set_to_local("user_id", user.pk)
         session.set_to_local("company_id", 
                              self.request.session.get("nodes")[0])
