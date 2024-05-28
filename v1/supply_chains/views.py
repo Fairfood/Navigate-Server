@@ -16,6 +16,19 @@ class CompanyViewSet(viewsets.ModelViewSet):
     """
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
+
+    def get_queryset(self):
+        """
+        Returns the queryset for the view.
+
+        This method is responsible for filtering the queryset based on the 
+        current user.
+
+        Returns:
+            QuerySet: The filtered queryset.
+        """
+        queryset = super().get_queryset()
+        return queryset.filter(users=self.request.user)
     
 
 class FarmerViewSet(viewsets.ModelViewSet):
@@ -24,6 +37,7 @@ class FarmerViewSet(viewsets.ModelViewSet):
     """
     queryset = Farmer.objects.all()
     serializer_class = FarmerSerializer
+    # filterset_fields = ('company',)
 
     @action(methods=['post'], detail=False, url_path='bulk-create')
     def bulk_create(self, request):

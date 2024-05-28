@@ -15,3 +15,8 @@ patch
 venv
 profiles/*
 /static/*
+*.dump
+*.sqlite3
+*.db
+*.log
+htmlcov/

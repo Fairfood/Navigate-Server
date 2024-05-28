@@ -35,20 +35,20 @@ def get_current_user():
     return user
 
 
-def get_current_entity():
-    """Returns the currently authenticated entity when called while processing
+def get_current_company():
+    """Returns the currently authenticated company when called while processing
     an API.
 
     Otherwise, returns None.
     """
-    from iam.nodes import Node
+    from v1.supply_chains.models.nodes import Company
 
-    entity = get_from_local("node", None)
-    current_entity = Node.objects.filter(
-        id=get_from_local("node_id")
+    company = get_from_local("node", None)
+    current_company = Company.objects.filter(
+        id=get_from_local("company_id")
     ).first()
-    if entity and entity == current_entity:
-        return entity
-    entity = current_entity
+    if company and company == current_company:
+        return company
+    company = current_entity
     set_to_local("node", entity)
     return entity
