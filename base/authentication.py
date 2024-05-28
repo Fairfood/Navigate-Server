@@ -13,6 +13,8 @@ import jwt
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 
+from base import session
+
 
 class JWTAuthentication(BaseAuthentication):
     """
@@ -141,7 +143,7 @@ class JWTAuthentication(BaseAuthentication):
             user_id = token["sub"]
             user_email = token["email"]
             user = UserModel.objects.get(
-                sso_user_id=user_id, email=user_email
+                sso_id=user_id, email=user_email
             )
         except (UserModel.DoesNotExist, KeyError):
             msg = _("Unable to identify user")
@@ -162,10 +164,8 @@ class JWTAuthentication(BaseAuthentication):
 
         """
         token_nodes = token.get('nodes', {})
-        avaliable_nodes = user.usernodes.select_related('node').filter(
-            node__sso_id__in=token_nodes.keys()
-        )
-        return [node.node.idencode for node in avaliable_nodes]
+        avaliable_nodes = user.companies.filter(sso_id__in=token_nodes.keys())
+        return [node.pk for node in avaliable_nodes]
 
     def verify_token(self, token):
         """
@@ -224,4 +224,7 @@ class JWTAuthentication(BaseAuthentication):
         ).decode('utf-8')
 
     def set_session(self):
-        pass
+        """Sets the user and company IDs to the session."""
+        session.set_to_local("user_id", self.request.user.pk)
+        session.set_to_local("company_id", 
+                             self.request.session.get("nodes")[0])

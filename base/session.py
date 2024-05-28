@@ -43,12 +43,12 @@ def get_current_company():
     """
     from v1.supply_chains.models.nodes import Company
 
-    company = get_from_local("node", None)
+    company = get_from_local("company", None)
     current_company = Company.objects.filter(
         id=get_from_local("company_id")
     ).first()
     if company and company == current_company:
         return company
-    company = current_entity
-    set_to_local("node", entity)
-    return entity
+    company = current_company
+    set_to_local("company", company)
+    return company

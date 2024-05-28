@@ -54,6 +54,7 @@ class Company(AbstractAddressModel):
     )
     pillers = models.JSONField(default=default_piller, 
                                null=True, blank=True)
+    sso_id = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self) -> str:
         return self.name

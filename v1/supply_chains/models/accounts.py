@@ -84,6 +84,7 @@ class User(AbstractBaseModel, AbstractUser):
         null=True, blank=True
     )
     email_verified = models.BooleanField(default=False)
+    sso_id = models.CharField(max_length=255, null=True, blank=True)
 
     objects = CustomUserManager()
     
