@@ -12,7 +12,10 @@ class NavigateUserAdmin(UserAdmin):
     """
     Custom admin class for managing SSO users.
     """
+    fieldsets = UserAdmin.fieldsets + (
+        (None, {"fields": ["sso_id"]}),)
     model = User
+
 
 
 @admin.register(Batch)
