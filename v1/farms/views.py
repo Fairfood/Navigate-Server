@@ -5,6 +5,7 @@ from rest_framework import viewsets
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework import status
 
 from .models import Farm
 from .models import FarmComment
@@ -47,6 +48,19 @@ class FarmViewSet(viewsets.ModelViewSet):
         queryset = self.get_queryset()
         data = queryset.values_list('geo_json', flat=True)
         return Response(data)
+    
+    @action(methods=['post'], detail=False, url_path='bulk-create')
+    def bulk_create(self, request):
+        """
+        API to create bulk uploads
+        """
+        serializer = self.get_serializer(data=request.data, many=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response('Data created.', status=status.HTTP_201_CREATED)
+
+
+        
     
 class FarmCommentViewSet(viewsets.ModelViewSet):
     """

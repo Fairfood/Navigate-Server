@@ -73,6 +73,10 @@ MIDDLEWARE = [
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
+    # "DEFAULT_AUTHENTICATION_CLASSES": (
+    #     "base.authentication.JWTAuthentication",),
+    # "DEFAULT_PERMISSION_CLASSES": (
+    #     "rest_framework.permissions.IsAuthenticated",), 
     "DEFAULT_THROTTLE_CLASSES": ["rest_framework.throttling.AnonRateThrottle"],
     "DEFAULT_THROTTLE_RATES": {"anon": "5/min"},
     # "EXCEPTION_HANDLER": (
@@ -235,8 +239,10 @@ CORS_ALLOW_HEADERS = [
     "timezone",
 ]
 
-CORS_PREFLIGHT_MAX_AGE = 86400
+CORS_PREFLIGHT_MAX_AGE = 86400  
 CORS_ALLOW_CREDENTIALS = True
+
+TRACE_OAUTH2_CLIENT_ID = env.get("TRACE_OAUTH2_CLIENT_ID", default='')
 
 # sentry_sdk.init(
 #     dsn=env.get("SENTRY_DSN"),
