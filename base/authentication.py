@@ -224,4 +224,4 @@ class JWTAuthentication(BaseAuthentication):
         ).decode('utf-8')
 
     def set_session(self):
-        
+        pass
