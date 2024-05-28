@@ -22,9 +22,13 @@ def format_data(r, f, e):
     """
     # Create a dictionary to store values for each name
     data = {}
+    
+    single_list = []
+    for i in [r, f, e]:
+        single_list.extend(list(i))
 
     # Iterate over v1 and v2 to populate the dictionary
-    for d in r + f + e:
+    for d in single_list:
         name = d['name']
         value = d['value']
         if name not in data:
@@ -33,7 +37,12 @@ def format_data(r, f, e):
             data[name].append(value)
 
     # Convert the dictionary to the desired format
-    return [[name] + values for name, values in data.items()]
+    data_list = [[name] + values for name, values in data.items()]
+
+    for sublist in data_list:
+        sublist.extend([0] * (4 - len(sublist)))
+
+    return data_list
 
 
 
@@ -61,7 +70,7 @@ def get_data(queryset):
 
     data = format_data(rainorest_allience, fairtrade, eudr)
 
-    return {
+    response  = {
         "title": _("Summary of deforestation"),
         "description": _("Tradin employs risk assessment criteria that include"
                          " a 113-meter radius for tree cover loss evaluation "
@@ -99,18 +108,90 @@ def get_data(queryset):
                           "loss are considered unacceptable.")
             }
         ],
-        "rows": [
+        "rows": []
+    }
+
+    for c, item in enumerate(data):
+        response["rows"].append( 
             {
-                "id": 1,
-                "values": data[0]
-            },
-            {
-                "id": 2,
-                "values": data[1],
-            },
-            {
-                "id": 3,
-                "values": data[2],
-            }
-        ]
+                "id": c + 1,
+                "values": item
+            })
+    
+    return {
+        "impact": [
+        {
+            "name": "Overall",
+            "is_passed" : False,
+            "indexes": [
+                {
+                    "name": "Total tree area lost",
+                    "is_passed": False
+                },
+                {
+                    "name": "Deforesation event count",
+                    "is_passed": False
+                },
+                {
+                    "name": "Deforesation event share",
+                    "is_passed": True
+                }
+            ]
+        },
+        {
+            "name": "Rainforest Alliance",
+            "is_passed" : False,
+            "indexes": [
+                {
+                    "name": "Total tree area lost",
+                    "is_passed": False
+                },
+                {
+                    "name": "Deforesation event count",
+                    "is_passed": False
+                },
+                {
+                    "name": "Deforesation event share",
+                    "is_passed": True
+                }
+            ]
+        },
+        {
+            "name": "Fairtrade",
+            "is_passed" : False,
+            "indexes": [
+                {
+                    "name": "Total tree area lost",
+                    "is_passed": False
+                },
+                {
+                    "name": "Deforesation event count",
+                    "is_passed": False
+                },
+                {
+                    "name": "Deforesation event share",
+                    "is_passed": True
+                }
+            ]
+        },
+        {
+            "name": "EUDR",
+            "is_passed" : True,
+            "indexes": [
+                {
+                    "name": "Total tree area lost",
+                    "is_passed": True
+                },
+                {
+                    "name": "Deforesation event count",
+                    "is_passed": True
+                },
+                {
+                    "name": "Deforesation event share",
+                    "is_passed": True
+                }
+            ]
+        }
+    ],
+    "analysis": response
     }

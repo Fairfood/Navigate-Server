@@ -78,7 +78,7 @@ class User(AbstractBaseModel, AbstractUser):
             "unique": _("A user with that email already exists."),
         }
     )
-    profile_image = models.ImageField(
+    profile_image = models.FileField(
         _("profile image"), 
         upload_to="profile_images/", 
         null=True, blank=True

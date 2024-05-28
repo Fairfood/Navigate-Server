@@ -19,7 +19,7 @@ def get_data(queryset):
             "for overall loss and loss by category (e.g. primary forest, "
             "protected areas) are based on Hansen et al using tree cover "
             "extent from 2000 and Landsat satellite imagery."
-        ).format(queryset.count()),
+        ).format(polygon_count=queryset.count()),
         "indexes": [
             {
                 "name": "Number of locations",

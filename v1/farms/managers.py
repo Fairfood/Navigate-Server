@@ -43,8 +43,8 @@ class FarmQuerySet(models.QuerySet):
         QuerySet: A QuerySet of farms annotated with the 'primary_forest_area' 
             field.
         """
-        return self.aaggregate(
-            primary_forest_area=Avg('oproperty__primary_forest_area')
+        return self.aggregate(
+            primary_forest_area=Avg('property__primary_forest_area')
             )["primary_forest_area"]
     
     def tree_cover_extent(self):
@@ -67,7 +67,7 @@ class FarmQuerySet(models.QuerySet):
         QuerySet: A QuerySet of farms annotated with the 'protected_area' 
             field.
         """
-        return self.aaggregate(
+        return self.aggregate(
             protected_area=Avg('property__protected_area')
             )["protected_area"]
     
@@ -85,10 +85,10 @@ class FarmQuerySet(models.QuerySet):
             >>> group_summary_by_criteria('method_name')
             <QuerySet [{'name': 'criteria_name', 'value': 123}, ...]>
         """
-        # queryset = DeforestationSummary.objects.filter(
-        #     farm__in=self, **FarmFilter[method])
-        # return queryset.values('name').annotate(value=Sum('value'))
-        return {}
+        DeforestationSummary = self.model.deforestation_summaries.field.model
+        queryset = DeforestationSummary.objects.filter(
+            farm__in=self, **FarmFilter[method])
+        return queryset.values('name').annotate(value=Sum('value'))
     
     def filter_by_request(self, request):
         """
