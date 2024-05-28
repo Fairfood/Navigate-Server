@@ -118,6 +118,9 @@ class JWTAuthentication(BaseAuthentication):
         self.request.session['nodes'] = user_nodes
         self.request.session['user_type'] = token.get('user_type')
         self.request.session['email_verified'] = token.get('email_verified')
+        
+        self.set_session()
+        
         return (user, key)
 
     def get_auth_user(self, token):
@@ -219,3 +222,6 @@ class JWTAuthentication(BaseAuthentication):
             encoding=serialization.Encoding.PEM,
             format=serialization.PublicFormat.SubjectPublicKeyInfo
         ).decode('utf-8')
+
+    def set_session(self):
+        
