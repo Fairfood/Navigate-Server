@@ -165,7 +165,7 @@ class JWTAuthentication(BaseAuthentication):
         """
         token_nodes = token.get('nodes', {})
         avaliable_nodes = user.companies.filter(sso_id__in=token_nodes.keys())
-        return [node.pk for node in avaliable_nodes]
+        return [node.pk.hashid for node in avaliable_nodes]
 
     def verify_token(self, token):
         """
@@ -225,6 +225,6 @@ class JWTAuthentication(BaseAuthentication):
 
     def set_session(self, user):
         """Sets the user and company IDs to the session."""
-        session.set_to_local("user_id", user.pk)
+        session.set_to_local("user_id", user.pk.hashid)
         session.set_to_local("company_id", 
                              self.request.session.get("nodes")[0])
