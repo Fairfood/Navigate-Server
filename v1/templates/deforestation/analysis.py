@@ -30,7 +30,7 @@ def format_data(r, f, e):
     # Iterate over v1 and v2 to populate the dictionary
     for d in single_list:
         name = d['name']
-        value = d['value']
+        value = round(d['value'], 2)
         if name not in data:
             data[name] = [value]
         else:
