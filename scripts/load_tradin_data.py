@@ -41,6 +41,9 @@ def create_farmer():
 def create_farm(farmer, geo_json):
     FarmModel = apps.get_model('farms', 'Farm')
     data = {
+        "country": "Sierra Leone",
+        "state": "Western Area",
+        "city": "Freetown",
         "external_id": faker.uuid4(),
         "farmer": farmer,
         "analysis_radius": 30,

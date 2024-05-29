@@ -101,9 +101,9 @@ class FarmQuerySet(models.QuerySet):
             The filtered data based on the query parameters.
         """
         data = request.query_params
-        return self.filter_by_kwargs(**data)
+        return self.filter_by_kwargs(data)
 
-    def filter_by_kwargs(self, **kwargs):
+    def filter_by_kwargs(self, kwargs):
         """
         Filter the queryset based on the provided keyword arguments.
 
@@ -113,7 +113,7 @@ class FarmQuerySet(models.QuerySet):
         Returns:
             QuerySet: The filtered queryset.
         """
-        country = kwargs.get('country')
+        country = kwargs.get('country', None)
         _state = kwargs.get('state')
         farmer = kwargs.get('farmer')
         company = kwargs.get('company')

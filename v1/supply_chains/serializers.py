@@ -44,6 +44,7 @@ class BatchSerializer(IDModelSerializer):
     """
     Serializer class for the Batch model.
     """
+    name = serializers.CharField(source='external_id', read_only=True)
     class Meta:
         model = Batch
         fields = '__all__'
