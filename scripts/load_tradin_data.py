@@ -175,7 +175,7 @@ def load_tradin_data():
     
     for obj in geo_json['features']:
         farmer = create_farmer()
-        farmer.add_supply_chain(supply_chain, obj)
+        farmer.add_supply_chain(supply_chain)
         farm = create_farm(farmer)
         create_farm_properties(farm)
         create_farm_comment(farm)
