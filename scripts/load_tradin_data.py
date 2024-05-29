@@ -69,6 +69,14 @@ def create_farm_comment(farm):
     }
     return FarmCommentModel.objects.create(**data)
 
+def create_batch():
+    BatchModel = apps.get_model('v1.supply_chains', 'Batch')
+    data = {
+        "external_id": faker.uuid4(),
+        "supply_chain": get_company().supply_chains.last(),
+    }
+    return BatchModel.objects.create(**data)
+
 def create_deforestation_summery(farm):
     DeforestationSummaryModel = apps.get_model(
         'v1.farms', 'DeforestationSummary')
@@ -161,6 +169,7 @@ def create_deforestation_summery(farm):
 
 def load_tradin_data():
     company = get_company()
+    batch = create_batch()
     supply_chain = company.supply_chains.last()
     geo_json = load_geo_json()
     
@@ -171,6 +180,8 @@ def load_tradin_data():
         create_farm_properties(farm)
         create_farm_comment(farm)
         create_deforestation_summery(farm)
+        batch.farmers.add(farmer)
+    print("Data loaded successfully")
 
 
 

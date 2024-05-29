@@ -14,7 +14,8 @@ class Batch(AbstractBaseModel):
     """
 
     external_id = models.CharField(max_length=255)
-    farmers = models.ManyToManyField(Farmer, related_name="batches")
+    farmers = models.ManyToManyField(Farmer, related_name="batches", 
+                                     blank=True)
     supply_chain = models.ForeignKey(
         "supply_chains.SupplyChain", on_delete=models.CASCADE, 
         related_name="batches"
