@@ -20,14 +20,14 @@ def load_geo_json():
 
 # @lru_cache
 def get_company():
-    CompanyModel = apps.get_model('v1.supply_chains', 'Company')
+    CompanyModel = apps.get_model('supply_chains', 'Company')
     try:
         return CompanyModel.objects.get(id=COMPANY_ID)
     except CompanyModel.DoesNotExist:
         raise Exception("Check if the company exists in the database")
     
 def create_farmer():
-    FarmerModel = apps.get_model('v1.supply_chains', 'Farmer')
+    FarmerModel = apps.get_model('supply_chains', 'Farmer')
     data = {
         "country": "Sierra Leone",
         "state": "Western Area",
@@ -39,7 +39,7 @@ def create_farmer():
     return FarmerModel.objects.create(**data)
 
 def create_farm(farmer, geo_json):
-    FarmModel = apps.get_model('v1.farms', 'Farm')
+    FarmModel = apps.get_model('farms', 'Farm')
     data = {
         "external_id": faker.uuid4(),
         "farmer": farmer,
@@ -49,7 +49,7 @@ def create_farm(farmer, geo_json):
     return FarmModel.objects.create(**data)
 
 def create_farm_properties(farm):
-    FarmPropertyModel = apps.get_model('v1.farms', 'FarmProperty')
+    FarmPropertyModel = apps.get_model('farms', 'FarmProperty')
     data = {
         "farm": farm,
         "total_area": faker.random_int(10, 100),
@@ -60,7 +60,7 @@ def create_farm_properties(farm):
     return FarmPropertyModel.objects.create(**data)
 
 def create_farm_comment(farm):
-    FarmCommentModel = apps.get_model('v1.farms', 'FarmComment')
+    FarmCommentModel = apps.get_model('farms', 'FarmComment')
     data = {
         "farm": farm,
         "comment": faker.text(),
@@ -70,7 +70,7 @@ def create_farm_comment(farm):
     return FarmCommentModel.objects.create(**data)
 
 def create_batch():
-    BatchModel = apps.get_model('v1.supply_chains', 'Batch')
+    BatchModel = apps.get_model('supply_chains', 'Batch')
     data = {
         "external_id": faker.uuid4(),
         "supply_chain": get_company().supply_chains.last(),
@@ -79,7 +79,7 @@ def create_batch():
 
 def create_deforestation_summery(farm):
     DeforestationSummaryModel = apps.get_model(
-        'v1.farms', 'DeforestationSummary')
+        'farms', 'DeforestationSummary')
     data = [
                 {
                     "farm": farm,
