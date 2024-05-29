@@ -113,11 +113,13 @@ class FarmQuerySet(models.QuerySet):
         Returns:
             QuerySet: The filtered queryset.
         """
-        country = kwargs.get('country', None)
+        country = kwargs.get('country')
         _state = kwargs.get('state')
         farmer = kwargs.get('farmer')
         company = kwargs.get('company')
         supply_chain = kwargs.get('supply_chain')
+        criteria = kwargs.get('criteria')
+        method = kwargs.get('method')
 
         if country:
             self = self.filter(country=country)
@@ -129,6 +131,13 @@ class FarmQuerySet(models.QuerySet):
             self = self.filter(farmer__company_id=company)
         if supply_chain:
             self = self.filter(farmer__supply_chains__id=supply_chain)
+        if criteria:
+            self = self.filter(deforestation_summaries__name=criteria)
+        if method and method in FarmFilter:
+            DSModel = self.model.deforestation_summaries.field.model
+            queryset = DSModel.objects.filter(
+                farm__in=self, **FarmFilter[method])
+            self = self.filter(deforestation_summaries__in=queryset)
         return self
         
 class FarmCommentQuerySet(models.QuerySet):
