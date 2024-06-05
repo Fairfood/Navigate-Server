@@ -22,6 +22,7 @@ class Theme(AbstractBaseModel):
         third_font_color (CharField): The third font color of the theme.
         info_color (CharField): The info color of the theme.
         badge_color (CharField): The badge color of the theme.
+        tab_background_color (CharField): The Tab background color of the theme
     """
 
     company = models.ForeignKey(Company, on_delete=models.CASCADE, 
@@ -37,6 +38,7 @@ class Theme(AbstractBaseModel):
     third_font_color = models.CharField(max_length=7)
     badge_color = models.CharField(max_length=7)
     info_color = models.CharField(max_length=7)
+    tab_background_color = models.CharField(max_length=7)
 
     def __str__(self) -> str:
         return f'{self.name}:{self.company}'
