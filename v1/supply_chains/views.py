@@ -30,8 +30,8 @@ class CompanyViewSet(viewsets.ModelViewSet):
             QuerySet: The filtered queryset.
         """
         queryset = super().get_queryset()
-        # if not self.request.user.is_superuser:
-        #     return queryset.filter(users=self.request.user)
+        if self.request.user.is_authenticated:
+            return queryset.filter(users=self.request.user)
         return queryset
 
     @action(detail=True, methods=['post'], url_path='add-supply-chain')
