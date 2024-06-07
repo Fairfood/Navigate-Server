@@ -85,7 +85,7 @@ class Farmer(AbstractAddressModel):
         Company, related_name="farmers", on_delete=models.CASCADE
     )
     supply_chains = models.ManyToManyField(
-        SupplyChain, related_name="farmers"
+        SupplyChain, related_name="farmers", blank=True
     )
 
     def __str__(self) -> str:

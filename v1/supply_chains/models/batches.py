@@ -18,7 +18,7 @@ class Batch(AbstractBaseModel):
                                      blank=True)
     supply_chain = models.ForeignKey(
         "supply_chains.SupplyChain", on_delete=models.CASCADE, 
-        related_name="batches"
+        related_name="batches", null=True, blank=True
     )
 
     objects = BatchQuerySet.as_manager()

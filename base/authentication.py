@@ -228,3 +228,25 @@ class JWTAuthentication(BaseAuthentication):
         session.set_to_local("user_id", user.pk.hashid)
         session.set_to_local("company_id", 
                              self.request.session.get("nodes")[0])
+        
+
+class SwitchJWTAuthentication(JWTAuthentication):
+    """
+    Custom authentication class that switches to JWT authentication only for 
+    GET requests.
+
+    Inherits from JWTAuthentication class.
+    """
+
+    def authenticate(self, request):
+        """
+        Authenticates the request.
+
+        Overrides the authenticate method of the parent class.
+        Returns the authenticated user if the request method is 'GET', 
+        otherwise returns None.
+        """
+        if request.method == 'GET':
+            return super().authenticate(request)
+        return None
+        
