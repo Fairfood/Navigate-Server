@@ -1,4 +1,5 @@
 from importlib import import_module
+from django.http import Http404
 from rest_framework import viewsets
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
@@ -17,6 +18,14 @@ class ThemeView(views.ListCreateAPIView):
     """
     queryset = Theme.objects.all()
     serializer_class = ThemeSerializer
+
+    def retrieve(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+        except Http404:
+            instance = self.get_queryset().last()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 
 class InterventionView(viewsets.ModelViewSet):
     """
