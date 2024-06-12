@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 
+from base import session
 from .models.nodes import Company, SupplyChain
 from .models.accounts import User
 from .models.nodes import Farmer
@@ -138,5 +139,30 @@ class BatchViewSet(viewsets.ModelViewSet):
     queryset = Batch.objects.all()
     serializer_class = BatchSerializer
 
+    def list(self, request, *args, **kwargs):
+        """
+        Retrieve a list of supply chains filtered by the current request 
+        and company.
 
+        Args:
+            request (HttpRequest): The current request object.
+            *args: Additional positional arguments.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            list: A list of supply chains filtered by the current request and 
+            company.
+        """
+        # Filter the queryset by the current request
+        self.queryset = self.queryset.filter_by_request(request)
+        
+        # Get the current company
+        company = session.get_current_company()
+        
+        # Filter the queryset by the company and make it distinct
+        self.queryset = self.queryset.filter(
+            farmers__company=company).distinct()
+        
+        # Call the list method of the superclass and return the result
+        return super().list(request, *args, **kwargs)
 

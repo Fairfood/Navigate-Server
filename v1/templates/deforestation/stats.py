@@ -27,19 +27,19 @@ def get_data(queryset):
             },
             {
                 "name": "Tree Cover Extent",
-                "value": round(queryset.tree_cover_extent(),2)
+                "value": round(queryset.tree_cover_extent() or 0,2)
             },
             {
                 "name": "Primary Forest",
-                "value": f"{round(queryset.primary_forest_area(), 2)}%"
+                "value": f"{round(queryset.primary_forest_area() or 0, 2)}%"
             },
             {
                 "name": "Protected Area",
-                "value": f"{round(queryset.protected_area(), 2)}%"
+                "value": f"{round(queryset.protected_area() or 0, 2)}%"
             },
             {
                 "name": "Total Hectares",
-                "value": round(queryset.total_area(), 2)
+                "value": round(queryset.total_area() or 0, 2)
             }
         ]
     }
