@@ -47,7 +47,7 @@ class FarmViewSet(viewsets.ModelViewSet):
             A Response object containing the geo_json values of the queryset.
         """
         queryset = self.get_queryset()
-        company = session.get_company(request)
+        company = session.get_current_company()
         queryset = queryset.filter(farmer__company=company)
         data = queryset.values_list('geo_json', flat=True)
         return Response(data)
