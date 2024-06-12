@@ -5,6 +5,7 @@ from base.serializers import IDModelSerializer
 from .models.nodes import Company, Farmer, SupplyChain
 from .models.batches import Batch
 from ..farms.serializers import FarmSerializer
+from ..farms.models import Farm
 
 class SupplyChainSerializer(IDModelSerializer):
     """
@@ -28,9 +29,11 @@ class CompanySerializer(IDModelSerializer):
 
     def get_farmer_countries(self, obj):
         """
-        Returns the countries of the farmers associated with the company.
+        Returns the countries of the farmer plots associated with the company.
         """
-        return obj.farmers.values_list('country', flat=True).distinct()
+        return Farm.objects.filter(
+            farmer__in=obj.farmers).values_list(
+                'country', flat=True).distinct()
 
 
 class FarmerSerializer(IDModelSerializer):
