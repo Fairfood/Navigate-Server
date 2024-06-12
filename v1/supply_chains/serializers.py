@@ -32,7 +32,7 @@ class CompanySerializer(IDModelSerializer):
         Returns the countries of the farmer plots associated with the company.
         """
         return Farm.objects.filter(
-            farmer__in=obj.farmers).values_list(
+            farmer__in=obj.farmers.all()).values_list(
                 'country', flat=True).distinct()
 
 
