@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework import status
 
+from base import session
 from .models import Farm
 from .models import FarmComment
 from .serializers import FarmSerializer
@@ -46,6 +47,8 @@ class FarmViewSet(viewsets.ModelViewSet):
             A Response object containing the geo_json values of the queryset.
         """
         queryset = self.get_queryset()
+        company = session.get_company(request)
+        queryset = queryset.filter(farmer__company=company)
         data = queryset.values_list('geo_json', flat=True)
         return Response(data)
     
