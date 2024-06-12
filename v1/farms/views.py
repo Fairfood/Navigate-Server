@@ -34,6 +34,23 @@ class FarmViewSet(viewsets.ModelViewSet):
         """
         return super().get_queryset().filter_by_request(self.request)
     
+    def list(self, request, *args, **kwargs):
+        """
+        Retrieve a list of farms filtered by the current company.
+
+        Args:
+            request (HttpRequest): The HTTP request object.
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+            HttpResponse: The HTTP response containing the list of farms.
+
+        """
+        company = session.get_current_company()
+        self.queryset = self.queryset.filter(farmer__company=company)
+        return super().list(request, *args, **kwargs)
+    
     
     @action(methods=['get'], detail=False, url_path='geo-jsons')
     def geoj_sons(self, request):
@@ -115,6 +132,8 @@ class StatAPIView(APIView):
         if piller not in Pillers.values:
             raise ValidationError("Enter valid piller.")
         queryset = Farm.objects.filter_by_request(request)
+        queryset = queryset.filter(
+            farmer__company=session.get_current_company())
         proccessor = importlib.import_module(template_files[piller])
         return Response(proccessor.stats.get_data(queryset))
 
@@ -162,6 +181,8 @@ class AnalysisViewSet(viewsets.ViewSet):
         if piller not in Pillers.values:
             raise ValidationError("Enter valid piller.")
         queryset = Farm.objects.filter_by_request(request)
+        queryset = queryset.filter(
+            farmer__company=session.get_current_company())
         proccessor = importlib.import_module(template_files[piller])
         return Response(proccessor.analysis.get_data(queryset))
     
@@ -182,6 +203,8 @@ class AnalysisViewSet(viewsets.ViewSet):
         if piller not in Pillers.values:
             raise ValidationError("Enter valid piller.")
         queryset = Farm.objects.filter_by_request(request)
+        queryset = queryset.filter(
+            farmer__company=session.get_current_company())
         proccessor = importlib.import_module(template_files[piller])
         return Response(proccessor.analysis_detail.get_data(queryset))
     
