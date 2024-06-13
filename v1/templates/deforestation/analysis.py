@@ -71,7 +71,7 @@ def impact(data):
     bool_data = [[not bool(value) for value in sublist] for sublist in data]
     overall = [all(col) for col in zip(*bool_data)]
     result = [[all(overall)] + overall]
-    for sublist in data:
+    for sublist in bool_data:
         result.append([all(sublist)] + sublist)
     return result
 
