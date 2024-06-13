@@ -8,10 +8,10 @@ from .base import REST_FRAMEWORK
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "v2.dev.api.fairfood.org",
+    "v2.staging.api.fairfood.org",
 ]
 
-CORS_ORIGIN_WHITELIST = ("https://v2.dev.api.fairfood.org",)
+CORS_ORIGIN_WHITELIST = ("https://v2.staging.api.fairfood.org",)
 
 
 REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"]["anon"] = "500/min"
