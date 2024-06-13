@@ -49,7 +49,7 @@ class BatchQuerySet(models.QuerySet):
         if supply_chain:
             self = self.filter(supply_chain_id=supply_chain)
         if country:
-            self = self.filter(farmer__country=country).distinct()
+            self = self.filter(farmers__country=country).distinct()
         return self
         
     
