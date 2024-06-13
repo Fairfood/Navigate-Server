@@ -25,9 +25,9 @@ class BatchQuerySet(models.QuerySet):
             The filtered data based on the query parameters.
         """
         data = request.query_params
-        return self.filter_by_kwargs(**data)
+        return self.filter_by_kwargs(data)
 
-    def filter_by_kwargs(self, **kwargs):
+    def filter_by_kwargs(self, kwargs):
         """
         Filter the queryset based on the provided keyword arguments.
 
