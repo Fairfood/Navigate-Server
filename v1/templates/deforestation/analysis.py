@@ -41,6 +41,9 @@ def format_data(r, f, e):
 
     for sublist in data_list:
         sublist.extend([0] * (4 - len(sublist)))
+        if "events" not in sublist:
+            for i in range(1, len(sublist)):
+                sublist[i] = f"{sublist[i]} ha"
 
     return data_list
 
