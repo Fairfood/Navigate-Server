@@ -120,9 +120,12 @@ class FarmQuerySet(models.QuerySet):
         supply_chain = kwargs.get('supply_chain')
         criteria = kwargs.get('criteria')
         method = kwargs.get('method')
+        batch = kwargs.get('batch')
 
         if country:
             self = self.filter(country=country)
+        if batch:
+            self = self.filter(farmer__batches__id=batch).distinct()
         if _state:
             self = self.filter(state=_state)
         if farmer:
