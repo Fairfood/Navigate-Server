@@ -39,11 +39,17 @@ class BatchQuerySet(models.QuerySet):
         """
         farm = kwargs.get('farm')
         piller = kwargs.get('piller')
+        supply_chain = kwargs.get('supply_chain')
+        country = kwargs.get('country')
 
         if farm:
             self = self.filter(farm_id=farm)
         if piller:
             self = self.filter(piller=piller)
+        if supply_chain:
+            self = self.filter(supply_chain_id=supply_chain)
+        if country:
+            self = self.filter(farmer__country=country).distinct()
         return self
         
     
