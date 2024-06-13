@@ -4,6 +4,7 @@ from rest_framework import viewsets
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from base import generics as views
+from base import session
 
 from ..farms.constants import template_files
 
@@ -52,6 +53,8 @@ class InterventionView(viewsets.ModelViewSet):
         piller = request.query_params.get('piller')
         if not piller or piller not in template_files.keys():
             raise ValidationError('Please provide a valid piller.')
+        company = session.get_current_company()
+        self.queryset = self.queryset.filter(company=company)
         response = super().list(request, *args, **kwargs)
         processor = import_module(template_files[piller])
         data = {
