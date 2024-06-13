@@ -59,6 +59,18 @@ class FarmerSerializer(IDModelSerializer):
             instance.add_supply_chain(supply_chain)
         return instance
     
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        farms = validated_data.pop('farms', [])
+        supply_chain = self._get_supply_chain(validated_data)
+        instance = super().update(instance, validated_data)
+        for farm in farms:
+            farm['farmer'] = instance
+        self.fields["farms"].create(farms)
+        if supply_chain:
+            instance.add_supply_chain(supply_chain)
+        return instance
+    
     def _get_supply_chain(self, validated_data):
         """
         Returns the supply chain instance.
