@@ -24,7 +24,7 @@ class ThemeView(views.ListCreateAPIView):
         try:
             instance = self.get_object()
         except Http404:
-            instance = self.get_queryset().last()
+            instance = self.get_queryset().filter(public_theme=True).last()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
