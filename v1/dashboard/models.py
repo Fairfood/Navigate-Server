@@ -23,6 +23,7 @@ class Theme(AbstractBaseModel):
         info_color (CharField): The info color of the theme.
         badge_color (CharField): The badge color of the theme.
         tab_background_color (CharField): The Tab background color of the theme
+        public_theme (BooleanField): A boolean field to indicate if the theme
     """
 
     company = models.ForeignKey(Company, on_delete=models.CASCADE, 
@@ -39,6 +40,7 @@ class Theme(AbstractBaseModel):
     badge_color = models.CharField(max_length=7)
     info_color = models.CharField(max_length=7)
     tab_background_color = models.CharField(max_length=7)
+    public_theme = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return f'{self.name}:{self.company}'
