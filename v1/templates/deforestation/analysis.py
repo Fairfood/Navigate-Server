@@ -41,12 +41,39 @@ def format_data(r, f, e):
 
     for sublist in data_list:
         sublist.extend([0] * (4 - len(sublist)))
-        if "event" not in sublist[0]:
-            for i in range(1, len(sublist)):
-                sublist[i] = f"{sublist[i]} ha"
 
     return data_list
 
+def add_unit(data):
+    """
+    Adds the unit 'ha' to the elements in the given data list, except for the 
+    first element in each sublist.
+
+    Parameters:
+    data (list): A list of sublists, where each sublist represents a 
+    data entry.
+    """
+    for sublist in data:
+        if not sublist[0].endswith("event"):
+            for i in range(1, len(sublist)):
+                sublist[i] = f"{sublist[i]} ha"
+
+def impact(data):
+    """
+    Calculates the impact of deforestation based on the given data.
+
+    Args:
+        data (list): A 2D list representing the deforestation data.
+
+    Returns:
+        list: A 2D list representing the impact of deforestation.
+    """
+    bool_data = [[bool(value) for value in sublist] for sublist in data]
+    overall = [all(col) for col in zip(*bool_data)]
+    result = [[all(overall)] + overall]
+    for sublist in data:
+        result.append([all(sublist)] + sublist)
+    return result
 
 
 def get_data(queryset):
@@ -72,6 +99,9 @@ def get_data(queryset):
     eudr = queryset.group_summary_by_criteria(Methods.EUDR)
 
     data = format_data(rainorest_allience, fairtrade, eudr)
+    impact_data = impact(data)
+
+    add_unit(data)
 
     response  = {
         "title": _("Summary of deforestation"),
@@ -121,80 +151,28 @@ def get_data(queryset):
                 "values": item
             })
     
+    impact_names = ["Overall", "Rainforest Alliance", "Fairtrade", "EUDR"]
+    
     return {
         "impact": [
         {
-            "name": "Overall",
-            "is_passed" : False,
+            "name": impact_names[name_index],
+            "is_passed" : values[0],
             "indexes": [
                 {
                     "name": "Total tree area lost",
-                    "is_passed": False
+                    "is_passed": values[1]
                 },
                 {
                     "name": "Deforesation event count",
-                    "is_passed": False
+                    "is_passed": values[2]
                 },
                 {
                     "name": "Deforesation event share",
-                    "is_passed": True
+                    "is_passed": values[3]
                 }
             ]
-        },
-        {
-            "name": "Rainforest Alliance",
-            "is_passed" : False,
-            "indexes": [
-                {
-                    "name": "Total tree area lost",
-                    "is_passed": False
-                },
-                {
-                    "name": "Deforesation event count",
-                    "is_passed": False
-                },
-                {
-                    "name": "Deforesation event share",
-                    "is_passed": True
-                }
-            ]
-        },
-        {
-            "name": "Fairtrade",
-            "is_passed" : False,
-            "indexes": [
-                {
-                    "name": "Total tree area lost",
-                    "is_passed": False
-                },
-                {
-                    "name": "Deforesation event count",
-                    "is_passed": False
-                },
-                {
-                    "name": "Deforesation event share",
-                    "is_passed": True
-                }
-            ]
-        },
-        {
-            "name": "EUDR",
-            "is_passed" : True,
-            "indexes": [
-                {
-                    "name": "Total tree area lost",
-                    "is_passed": True
-                },
-                {
-                    "name": "Deforesation event count",
-                    "is_passed": True
-                },
-                {
-                    "name": "Deforesation event share",
-                    "is_passed": True
-                }
-            ]
-        }
+        } for name_index, values in enumerate(impact_data)
     ],
     "analysis": response
     }

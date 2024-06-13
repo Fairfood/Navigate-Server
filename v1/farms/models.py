@@ -42,7 +42,7 @@ class FarmProperty(AbstractBaseModel):
 
     Attributes:
         farm (Farm): The farm associated with the properties.
-        total_area (float): The total area of the farm.
+        total_area (float): The total area of the farm. 
         primary_forest_area (float): The area of primary forest in the farm.
         tree_cover_extent (float): The extent of tree cover in the farm.
         protected_area (float): The area of protected land in the farm.
