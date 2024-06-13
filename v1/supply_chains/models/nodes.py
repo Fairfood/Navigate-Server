@@ -104,7 +104,5 @@ class Farmer(AbstractAddressModel):
         """
 
         if supply_chain not in self.company.supply_chains.all():
-            raise ValidationError(
-                "The company does not have access to this supply chain."
-            )
+            self.company.supply_chains.add(supply_chain)
         self.supply_chains.add(supply_chain)
