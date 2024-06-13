@@ -68,7 +68,7 @@ def impact(data):
     Returns:
         list: A 2D list representing the impact of deforestation.
     """
-    bool_data = [[bool(value) for value in sublist] for sublist in data]
+    bool_data = [[not bool(value) for value in sublist] for sublist in data]
     overall = [all(col) for col in zip(*bool_data)]
     result = [[all(overall)] + overall]
     for sublist in data:
