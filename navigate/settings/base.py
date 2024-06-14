@@ -246,6 +246,9 @@ TRACE_OAUTH2_CLIENT_ID = env.get("TRACE_OAUTH2_CLIENT_ID", default='')
 
 TOTP_SECRET = env.get("TOTP_SECRET")
 
+STATIC_URL = "/static/"
+STATIC_ROOT = "static/"
+
 sentry_sdk.init(
     dsn=env.get("SENTRY_DSN"),
     # Set traces_sample_rate to 1.0 to capture 100%
