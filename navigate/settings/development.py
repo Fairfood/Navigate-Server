@@ -1,17 +1,15 @@
 from datetime import timedelta
 
 from .base import *  # noqa
-from .base import env
-from .base import REST_FRAMEWORK
-
+from .base import REST_FRAMEWORK, env
 
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "v2.dev.api.fairfood.org",
+    "v2.dev.api.fairfood.org", "navigate.dev.api.fairfood.org"
 ]
 
-CORS_ORIGIN_WHITELIST = ("https://v2.dev.api.fairfood.org",)
+CORS_ORIGIN_WHITELIST = ("https://v2.dev.api.fairfood.org","https://navigate.dev.api.fairfood.org",)
 
 
 REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"]["anon"] = "500/min"
