@@ -41,3 +41,6 @@ pytz==2024.1
 django-cors-headers==4.3.1
 sentry-sdk==1.45.0
 django-s3-folder-storage==0.5
+# Celery
+celery==5.4.0
+django-celery-beat==2.6.0
