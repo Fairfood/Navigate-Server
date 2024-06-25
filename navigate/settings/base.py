@@ -14,7 +14,6 @@ from pathlib import Path
 
 from . import env
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -125,7 +124,7 @@ DATABASES = {
         "NAME": env.get("DB_NAME"),
         "USER": env.get("DB_USER"),
         "PASSWORD": env.get("DB_PASSWORD"),
-        "PORT": "5432",
+        "PORT": env.get("DB_PORT", default="5432"),
         "HOST": env.get("DB_HOST", default="localhost"),
         "DISABLE_SERVER_SIDE_CURSORS": True,
     }
