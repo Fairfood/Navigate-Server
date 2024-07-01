@@ -43,7 +43,7 @@ class Company(AbstractAddressModel):
         pillers (JSONField): A field to store the company's pillers.
     """
 
-    image = models.URLField(null=True, blank=True)
+    image = models.FileField(upload_to="company_images", null=True, blank=True)
     name = models.CharField(max_length=255)
     users = models.ManyToManyField(
         settings.AUTH_USER_MODEL, related_name="companies"
