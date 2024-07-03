@@ -20,10 +20,11 @@ def get_data(queryset):
             "protected areas) are based on Hansen et al using tree cover "
             "extent from 2000 and Landsat satellite imagery."
         ).format(polygon_count=queryset.count()),
+        
         "indexes": [
             {
                 "name": "Number of locations",
-                "value": queryset.count()
+                "value": queryset.values('farmer').distinct().count()
             },
             {
                 "name": "Tree Cover Extent",
