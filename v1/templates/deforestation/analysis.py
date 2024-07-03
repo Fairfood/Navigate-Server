@@ -161,15 +161,15 @@ def get_data(queryset):
             "indexes": [
                 {
                     "name": "Total tree area lost",
-                    "is_passed": values[1]
+                    "is_passed": values[1] if len(values) > 1 else False
                 },
                 {
                     "name": "Deforesation event count",
-                    "is_passed": values[2]
+                    "is_passed": values[2] if len(values) > 1 else False
                 },
                 {
                     "name": "Deforesation event share",
-                    "is_passed": values[3]
+                    "is_passed": values[3] if len(values) > 1 else False
                 }
             ]
         } for name_index, values in enumerate(impact_data)
