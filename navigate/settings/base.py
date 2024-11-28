@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
+    'oauth2_provider',
     'v1.supply_chains',
     'v1.farms',
     'v1.dashboard',
@@ -74,8 +75,8 @@ REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "base.authentication.SwitchJWTAuthentication"],
-    "DEFAULT_PERMISSION_CLASSES": ["base.permissions.SwitchUserPermission"], 
+        "base.authentication.CustomDynamicAuthentication"],
+    "DEFAULT_PERMISSION_CLASSES": ["base.permissions.CombinedPermission"], 
     "DEFAULT_THROTTLE_CLASSES": ["rest_framework.throttling.AnonRateThrottle"],
     "DEFAULT_THROTTLE_RATES": {"anon": "5/min"},
     # "EXCEPTION_HANDLER": (
@@ -259,3 +260,26 @@ sentry_sdk.init(
     profiles_sample_rate=1.0,
     environment=ENVIRONMENT,
 )
+
+AUTH_TYPE_CLASSES = {
+    'external_auth': 'base.authentication.SwitchJWTAuthentication',
+    'client_credentials': 'base.authentication.CustomOAuth2Authentication',
+}
+
+OAUTH2_PROVIDER = {
+    "OAUTH2_VALIDATOR_CLASS": ("base.validators.OAuth2ClientAccessValidator"),
+    "SCOPES": {
+        "read:farmer": "Read Farmer",
+        "create:farmer": "Create Farmer",
+        "update:farmer": "Update Farmer",
+        "delete:farmer": "Delete Farmer",
+        "read:company": "Read Company",
+        "create:company": "Create Company",
+        "update:company": "Update Company",
+        "delete:company": "Delete Company",
+        "read:batch": "Read Batch",
+        "create:batch": "Create Batch",
+        "update:batch": "Update Batch",
+        "delete:batch": "Delete Batch",
+    },
+ }

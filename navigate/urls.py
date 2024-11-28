@@ -16,10 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.urls import include
+from oauth2_provider import urls as oauth2_urls
 
 urlpatterns = [
     path('navigate/admin/', admin.site.urls),
     path('navigate/farms/', include('v1.farms.urls')),
     path('navigate/supply-chains/', include('v1.supply_chains.urls')),
     path('navigate/dashboard/', include('v1.dashboard.urls')),
+    path('navigate/oauth/', include(oauth2_urls)),
 ]
