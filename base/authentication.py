@@ -1,17 +1,21 @@
 """Module to override the default authentication."""
 import os
+import jwt
 from django.conf import settings
-from rest_framework.authentication import (
-    BaseAuthentication, 
-    get_authorization_header
-)
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
 
 from rest_framework import exceptions
-import jwt
+from rest_framework.authentication import (
+    BaseAuthentication, 
+    get_authorization_header
+)
+from importlib import import_module
+from sentry_sdk import set_tag
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
+from oauth2_provider.contrib.rest_framework import OAuth2Authentication
+from oauth2_provider.oauth2_backends import get_oauthlib_core
 
 from base import session
 
@@ -249,4 +253,104 @@ class SwitchJWTAuthentication(JWTAuthentication):
         if request.method == 'GET':
             return super().authenticate(request)
         return None
-        
+
+
+class AuthMixin:
+
+    def set_section(self, user, validated_token):
+        """Set session data to local storage and tags based on the
+        authentication method used.
+
+        Args:
+            user (User): The authenticated user.
+            validated_token (dict): Validated token data.
+        """
+
+        session_data = {}
+        if self.__class__.__name__ == "CustomOAuth2Authentication":
+            session_data = {
+                "user_id": user.id,
+            }
+
+        # Set session data to local storage and tags
+        for k, v in session_data.items():
+            session.set_to_local(k, v)
+            set_tag(f"session.{k}", v)
+
+
+class CustomOAuth2Authentication(OAuth2Authentication, AuthMixin):
+    """Custom OAuth2 authentication class with extended functionality.
+
+    This class extends the default OAuth2Authentication to provide
+    additional features.
+    """
+
+    def authenticate(self, request):
+        """Returns two-tuple of (user, token) if authentication succeeds, or
+        None otherwise."""
+        oauthlib_core = get_oauthlib_core()
+
+        # Adding default scope for
+        valid, r = oauthlib_core.verify_request(
+            request, scopes=[]
+        )
+        if valid:
+            self.set_section(r.user, r.access_token)
+            return r.user, r.access_token
+        request.oauth2_error = getattr(r, "oauth2_error", {})
+        return None
+
+
+class CustomDynamicAuthentication(BaseAuthentication):
+    """
+    Custom authentication class that dynamically selects and uses the appropriate
+    authentication mechanism based on the `Auth-Type` header in the request.
+    """
+
+    def get_auth_class(self, auth_type):
+        """
+        Retrieves the authentication class based on the provided auth type.
+
+        Args:
+            auth_type (str): The type of authentication specified in the request header.
+
+        Returns:
+            Type: The authentication class corresponding to the auth type.
+
+        Raises:
+            AuthenticationFailed: If the provided auth type is not supported.
+        """
+
+        # Get the authentication class path from settings
+        auth_class_path = settings.AUTH_TYPE_CLASSES.get(auth_type)
+        if not auth_class_path:
+            raise exceptions.AuthenticationFailed(
+                f"Unsupported authentication type: {auth_type}"
+            )
+        # Split the path into module path and class name
+        module_path, class_name = auth_class_path.rsplit(".", 1)
+
+        # Import the module and get the class
+        module = import_module(module_path)
+        return getattr(module, class_name)
+
+    def authenticate(self, request):
+        """
+        Dynamically selects and uses the appropriate authentication mechanism based on the
+        `Auth-Type` header in the request. Calls the `authenticate` method of the selected
+        authentication class.
+
+        Args:
+            request (HttpRequest): The HTTP request object containing the authentication data.
+
+        Returns:
+            tuple or None: A tuple of (user, auth) if authentication is successful, or None if not.
+        """
+
+        # Extract auth type from request header or default to 'password_grant'
+        auth_type = request.headers.get("Auth-Type", "external_auth").lower()
+
+        # Get the relevant authentication class
+        auth_class = self.get_auth_class(auth_type)
+        # Instantiate the authentication class and authenticate
+        return auth_class().authenticate(request)
