@@ -267,10 +267,9 @@ class AuthMixin:
         """
 
         session_data = {}
-        if self.__class__.__name__ == "OAuth2Authentication":
+        if self.__class__.__name__ == "CustomOAuth2Authentication":
             session_data = {
                 "user_id": user.id,
-                "entity_id": validated_token.company_id,
             }
 
         # Set session data to local storage and tags
