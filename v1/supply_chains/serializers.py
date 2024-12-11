@@ -1,11 +1,14 @@
 from django.db import transaction
 from rest_framework import serializers
 from base.serializers import IDModelSerializer
+from base.session import get_current_company
 
 from .models.nodes import Company, Farmer, SupplyChain
 from .models.batches import Batch
+from .models.accounts import User
 from ..farms.serializers import FarmSerializer
 from ..farms.models import Farm
+from ..dashboard.models import Theme
 
 class SupplyChainSerializer(IDModelSerializer):
     """
@@ -108,3 +111,41 @@ class BatchSerializer(IDModelSerializer):
                 name=supply_chain_name)
             return instance
         return None
+
+
+class BasicCompanySerializer(IDModelSerializer):
+    """Basic serializer for company"""
+
+    class Meta:
+        model = Company
+        fields = ['id', 'name', 'image']
+
+
+class UserSerializer(IDModelSerializer):
+    """Serializer class to get user details"""
+
+    default_company = serializers.SerializerMethodField()
+    companies = BasicCompanySerializer(many=True, read_only=True)
+    theme = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = [
+            'id', 'username', 'first_name', 'last_name', 'email', 
+            'profile_image', 'sso_id', 'default_company', 'companies', 
+            'theme'
+        ]
+
+    def get_default_company(self, obj):
+        """Get default company"""
+
+        company = get_current_company()
+        return company.id
+    
+    def get_theme(self, obj):
+        """Get company theme"""
+        
+        theme = Theme.objects.filter(company=get_current_company()).first()
+        if not theme:
+            theme = Theme.objects.filter(public_theme=True).last()
+        return theme.id

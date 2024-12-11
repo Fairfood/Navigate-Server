@@ -34,7 +34,7 @@ class Farm(AbstractAddressModel):
         Returns:
             str: The string representation of the farm.
         """
-        return f"{self.farmer} - {self.external_id}"
+        return f"{self.farmer} - {self.external_id} - {self.id}"
     
 class FarmProperty(AbstractBaseModel):
     """
@@ -96,25 +96,22 @@ class FarmComment(AbstractBaseModel):
 
 
 
-class DeforestationSummary(AbstractBaseModel):
+class YearlyTreeCoverLoss(AbstractBaseModel):
     """
-    Represents a summary of deforestation on a farm.
+    Represents a summary of yearly tree cover loss on a farm.
 
     Attributes:
-        farm (Farm): The farm associated with the deforestation summary.
-        name (str): The name of the deforestation summary.
+        farm (Farm): The farm associated with the tree cover loss.
         year (int): The year of the deforestation summary.
         canopy_density (float): The canopy density of the deforestation.
-        source (str): The source of the deforestation summary.
         value (float): The value of the deforestation summary.
     """
 
-    farm = models.ForeignKey(Farm, on_delete=models.CASCADE,
-                             related_name="deforestation_summaries")
-    name = models.CharField(max_length=255)
+    farm = models.ForeignKey(
+        Farm, on_delete=models.CASCADE, 
+        related_name="yearly_tree_cover_losses")
     year = models.IntegerField(default=2014)
-    canopy_density = models.FloatField(default=0.0)
-    source = models.CharField(max_length=255)
+    canopy_density = models.FloatField(default=30)
     value = models.FloatField(default=0.0)
 
     def __str__(self) -> str:
@@ -124,5 +121,5 @@ class DeforestationSummary(AbstractBaseModel):
         Returns:
             str: The string representation of the deforestation summary.
         """
-        return f"{self.farm} - {self.name} - {self.year}"
+        return f"{self.farm} - {self.year}"
 

@@ -27,8 +27,6 @@ class FarmSerializer(serializers.IDModelSerializer):
             Farm: The newly created Farm instance.
         """
         instance = super().create(validated_data)
-        load_dummy_data.create_farm_properties(instance)
-        load_dummy_data.create_deforestation_summery(instance)
         return instance
 
 
