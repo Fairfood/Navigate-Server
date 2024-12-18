@@ -12,6 +12,10 @@ python manage.py migrate
 #     echo  "Created super user $DJANGO_SUPERUSER_USERNAME"
 # fi
 
+if [ "$INSTALL_REQUIREMENTS" = "true" ]
+then
+    pip install -r requirements/$ENVIRONMENT.txt
+fi
 
 $@
 

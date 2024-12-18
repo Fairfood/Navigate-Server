@@ -1,19 +1,17 @@
-from rest_framework import viewsets
-from rest_framework.views import APIView
-from rest_framework.decorators import action
-from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.exceptions import ValidationError
+from rest_framework.decorators import action
+from rest_framework.generics import RetrieveAPIView
+from rest_framework.response import Response
 
 from base import session
 from base.request_handler import CustomScopeViewset
-from .models.nodes import Company, SupplyChain
+
 from .models.accounts import User
-from .models.nodes import Farmer
 from .models.batches import Batch
-from .serializers import CompanySerializer, SupplyChainSerializer
-from .serializers import FarmerSerializer, UserSerializer
-from .serializers import BatchSerializer
+from .models.nodes import Company, Farmer, SupplyChain
+from .serializers import (BatchSerializer, CompanySerializer, FarmerSerializer,
+                          SupplyChainSerializer, UserSerializer)
+
 
 class CompanyViewSet(CustomScopeViewset):
     """
@@ -115,7 +113,7 @@ class CompanyViewSet(CustomScopeViewset):
             serializer = SupplyChainSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             return serializer.save()
-        
+
 
 class FarmerViewSet(CustomScopeViewset):
     """
@@ -123,7 +121,7 @@ class FarmerViewSet(CustomScopeViewset):
     """
     queryset = Farmer.objects.all()
     serializer_class = FarmerSerializer
-    # filterset_fields = ('company',)
+    # et_fields = ('company',)
     resource_types = ['farmer']
 
     @action(methods=['post'], detail=False, url_path='bulk-create')
@@ -135,6 +133,20 @@ class FarmerViewSet(CustomScopeViewset):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         return Response('Data created.', status=status.HTTP_201_CREATED)
+
+
+class UserDetailsView(RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    resource_types = ['user']
+
+
+class UserSearchByEmailView(RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    lookup_field = 'email'
+    resource_types = ['user']
+
 
 class BatchViewSet(CustomScopeViewset):
     """
@@ -170,20 +182,3 @@ class BatchViewSet(CustomScopeViewset):
         
         # Call the list method of the superclass and return the result
         return super().list(request, *args, **kwargs)
-
-
-class UserDetailView(APIView):
-    """View to return user detials."""
-
-    serializer_class = UserSerializer
-
-    def get(self, request, *args, **kwargs):
-        """
-        Override get method to get user from request and return user 
-        details.
-        """
-
-        user = request.user
-        serialized_data = self.serializer_class(
-            user, context={'request': request}).data
-        return Response(serialized_data, status=status.HTTP_200_OK)

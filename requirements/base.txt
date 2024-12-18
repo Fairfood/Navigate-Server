@@ -46,3 +46,7 @@ pyotp==2.9.0
 # Celery
 celery==5.4.0
 django-celery-beat==2.6.0
+#Eath engine
+earthengine-api==0.1.409
+shapely==2.0.6
+pyproj==3.7.0
