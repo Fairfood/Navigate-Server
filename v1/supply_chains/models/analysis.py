@@ -17,7 +17,9 @@ class AnalysisQueue(AbstractBaseModel):
     """
 
     farm = models.ManyToManyField(Farm, related_name="analysis_queue")
-    status = models.IntegerField(choices=constants.SyncStatus, default=constants.SyncStatus.IN_QUEUE)
+    status = models.IntegerField(
+        choices=constants.SyncStatus.choices, 
+        default=constants.SyncStatus.IN_QUEUE)
 
     def __str__(self) -> str:
         return f"{str(self.id)} - {str(self.status)}"

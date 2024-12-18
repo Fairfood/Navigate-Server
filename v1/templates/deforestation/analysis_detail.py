@@ -7,6 +7,11 @@ from collections import defaultdict
 from ...farms.constants import Pillers
 from .analysis import Methods
 
+def round_off(value):
+    if type(value) == float:
+        value = round(value, 2)
+    return value
+
 def get_data(queryset):
     queryset = queryset.filter(property__isnull=False)
     data = queryset.annotate(
@@ -60,7 +65,7 @@ def get_data(queryset):
             ],
             "rows": [
                         {
-                            "values": items,
+                            "values": [round_off(item) for item in items],
                             "comments": comments_dict[items[0]]
                         } for items in data  
                     ],

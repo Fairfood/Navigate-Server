@@ -1,8 +1,12 @@
 import ee
+import math
+from shapely.geometry import Polygon, mapping
+from shapely.ops import transform
+from pyproj import Transformer
 from django.apps import apps
-ee.Initialize()
+from v1.farms.models import YearlyTreeCoverLoss
 
-# Define the polygon coordinates for the analysis
+ee.Initialize()
 
 
 class ForestAnalyzer():
@@ -44,13 +48,12 @@ class ForestAnalyzer():
             canopy_dens (int): The canopy density threshold.
 
         """
-        print('Initing analyzer')
+
         if geo_json["type"] == "Point":
-            self.polygon = ee.Geometry.Point(geo_json["coordinates"])
-        elif geo_json["type"] == "Polygon":
-            self.polygon = ee.Geometry.Polygon(geo_json["coordinates"][0])
-        else:
-            raise ValueError("Invalid geojson data, Only Point and Polygon are supported.")
+            geo_json = coord_to_poly(
+                geo_json['coordinates'][0], geo_json['coordinates'][1])
+            
+        self.polygon = ee.Geometry.Polygon(geo_json["coordinates"][0])
         self.buffer_area = buffer_area
         self.canopy_dens = canopy_dens
         self._buffer_poly = self.polygon
@@ -143,14 +146,18 @@ class ForestAnalyzer():
 
     def calculate_yearly_tree_cover_loss(self):
         """
-        Calculates the total tree cover loss for each year within the specified polygon.
-        This function processes the 'lossyear' band from the dataset to determine the year of tree cover loss,
-        creates a binary mask to indicate areas of loss, and sums up the area of loss for each year.
-        The areas of loss are converted from square meters to hectares .
+        Calculates the total tree cover loss for each year within the 
+        specified polygon.This function processes the 'lossyear' band 
+        from the dataset to determine the year of tree cover loss, 
+        creates a binary mask to indicate areas of loss, and sums up the 
+        area of loss for each year.The areas of loss are converted 
+        from square meters to hectares .
 
         Returns:
-            list of dict: Each dictionary contains the year and the corresponding tree cover loss area in hectares.
+            list of dict: Each dictionary contains the year and the 
+            corresponding tree cover loss area in hectares.
         """
+
         # Select the 'lossyear' band which indicates the year of tree cover loss.
         loss_image = self.dataset_tree_cover.select(["loss"])
         tree_cover = self.dataset_tree_cover.select(["treecover2000"])
@@ -198,10 +205,7 @@ class ForestAnalyzer():
         return formatted_data
 
 
-# analyzer = ForestAnalyzer(polygon=polygon_cords[0], canopy_dens=30)
-# print(analyzer.calculate_yearly_tree_cover_loss())
-
-def create_farm_properties(farm):
+def create_farm_properties(farm, analyzer):
     """
     Create farm properties based on the given farm object.
 
@@ -215,14 +219,6 @@ def create_farm_properties(farm):
         None
 
     """
-    # Check if the farm has a geometry field
-    if "geometry" in farm.geo_json:
-        # Create a ForestAnalyzer object with the farm's geometry
-        analyzer = ForestAnalyzer(geo_json=farm.geo_json["geometry"], 
-                                  canopy_dens=30, buffer_area=30)
-    else:
-        # Create a ForestAnalyzer object with the farm's geo_json
-        analyzer = ForestAnalyzer(geo_json=farm.geo_json, canopy_dens=30, buffer_area=30)
     
     # Get the FarmProperty model
     FarmPropertyModel = apps.get_model('farms', 'FarmProperty')
@@ -236,121 +232,114 @@ def create_farm_properties(farm):
         "protected_area": analyzer.calculate_protected_area()
     }
     
-    # Create and return the FarmProperty object
-    return FarmPropertyModel.objects.create(**data)
+    # Create FarmProperty object
+    FarmPropertyModel.objects.update_or_create(farm=farm, defaults=data)
+    return True
 
-def create_deforestation_summery(farm):
+
+def create_yearly_tree_cover_loss(farm, analyzer_10, analyzer_30):
     """
-    Creates deforestation summary for a given farm.
+    Creates yearly tree cover loss for a given farm.
 
     Args:
-        farm (Farm): The farm object for which the deforestation summary is created.
+        farm (Farm): The farm object for which the yearly tree cover 
+        loss is created.
 
     Returns:
-        list: A list of DeforestationSummaryModel objects created.
+        list: A list of YearlyTreeCoverLossModel objects created.
 
     Raises:
         None
 
     """
-    DeforestationSummaryModel = apps.get_model(
-        'farms', 'DeforestationSummary')
-    
-    # Check if the farm has a geometry field
-    if "geometry" in farm.geo_json:
-        analyzer_30 = ForestAnalyzer(geo_json=farm.geo_json["geometry"], 
-                                  canopy_dens=30, buffer_area=30)
-    else:
-        analyzer_10 = ForestAnalyzer(geo_json=farm.geo_json, canopy_dens=30)
 
     # Calculate yearly tree cover loss for both canopy densities
     year_data_30 = analyzer_30.calculate_yearly_tree_cover_loss()
     year_data_10 = analyzer_10.calculate_yearly_tree_cover_loss()
 
-    # Create loss events for canopy density 30
-    loss_events = [
-        {
-            "farm": farm,
-            "name": "Tree cover loss events",
-            "year": year,
-            "canopy_density": 30,
-            "source": "Global Forest Change",
-            "value": 1
-        } for year, _ in year_data_30.items()
-    ]
+    # Create loss events for both canopy densities
+    for year, value in year_data_30.items():
+        YearlyTreeCoverLoss.objects.update_or_create(
+            farm=farm, year=year, canopy_density=30, 
+            defaults={'value':value}
+        )
+    for year, value in year_data_10.items():
+        YearlyTreeCoverLoss.objects.update_or_create(
+            farm=farm, year=year, canopy_density=10, 
+            defaults={'value':value}
+        )
+    
+    return True
 
-    # Create loss area for canopy density 30
-    loss_area = [
-        {
-            "farm": farm,
-            "name": "Tree cover loss area",
-            "year": year,
-            "canopy_density": 30,
-            "source": "Global Forest Change",
-            "value": value
-        } for year, value in year_data_30.items()
-    ]
 
-    # Create loss events for canopy density 10
-    loss_events = loss_events + [
-        {
-            "farm": farm,
-            "name": "Tree cover loss events",
-            "year": year,
-            "canopy_density": 10,
-            "source": "Global Forest Change",
-            "value": 1
-        } for year in year_data_10.items()
-    ]
+def calculate_hex_radius(area_in_ha):
 
-    # Create loss area for canopy density 10
-    loss_area = loss_area + [
-        {
-            "farm": farm,
-            "name": "Tree cover loss area",
-            "year": year,
-            "canopy_density": 10,
-            "source": "Global Forest Change",
-            "value": value
-        } for year, value in year_data_10.items()
-    ]
+    # 1 hectare = 10,000 square meters
+    area_in_sqm = area_in_ha * 10000
 
-    # Check if there is protected area loss
-    protected_loss =  1 if analyzer_10.calculate_protected_area() > 0 else 0
+    # The formula for the area of a regular hexagon is (3 * sqrt(3) / 2) * r^2
+    # Solving for r gives r = sqrt((2 * area) / (3 * sqrt(3)))
+    radius = math.sqrt((2 * area_in_sqm) / (3 * math.sqrt(3)))
+    return radius
 
-    # Create forest loss events for specific years
-    forest_loss = [
-        {
-            "farm": farm,
-            "name": "Tree cover loss area",
-            "year": 2014,
-            "canopy_density": 30,
-            "source": "Global Forest Change",
-            "value": protected_loss
-        },{
-            "farm": farm,
-            "name": "Tree cover loss area",
-            "year": 2019,
-            "canopy_density": 30,
-            "source": "Global Forest Change",
-            "value": protected_loss
-        } ,{
-            "farm": farm,
-            "name": "Tree cover loss area",
-            "year": 2020,
-            "canopy_density": 10,
-            "source": "Global Forest Change",
-            "value": protected_loss
-        } 
-    ]
 
-    # Combine all the data
-    data = loss_events + loss_area + forest_loss
+def create_hexagon(lat, lon, area_in_ha):
 
-    # Create DeforestationSummaryModel objects
-    summary = []
-    for i in data:
-        summary.append(DeforestationSummaryModel(**i))
-    # print(summary[0])
-    # Bulk create the DeforestationSummaryModel objects
-    return DeforestationSummaryModel.objects.bulk_create(summary)
+    # Calculate the radius needed for a hexagon with the given area
+    radius = calculate_hex_radius(area_in_ha)
+
+    # Set up transformer to convert from lat/lon (WGS84) to UTM (projected)
+    transformer_to_utm = Transformer.from_crs(
+        "epsg:4326", "epsg:32633", always_xy=True)
+    transformer_to_latlon = Transformer.from_crs(
+        "epsg:32633", "epsg:4326", always_xy=True)
+
+    # Convert the center lat/lon to UTM
+    utm_center = transformer_to_utm.transform(lon, lat)
+
+    # Create the hexagon in UTM coordinates
+    hexagon = Polygon([
+        (utm_center[0] + radius * math.cos(angle),
+         utm_center[1] + radius * math.sin(angle))
+        for angle in [math.radians(60 * i) for i in range(6)]
+    ])
+
+    # Convert the hexagon back to lat/lon (WGS84)
+    hexagon_latlon = transform(transformer_to_latlon.transform, hexagon)
+    return hexagon_latlon
+
+
+def polygon_to_geojson(polygon):
+    """Function to convert a polygon to GeoJSON format"""
+
+    geojson = {
+        "type": "Feature",
+        "geometry": mapping(polygon),
+        "properties": {}
+    }
+    return geojson
+
+
+def coord_to_poly(latitude, longitude, area_in_ha=.25):
+    """Function to change point coordinate to polygon"""
+
+    # Create the hexagon
+    hex_polygon = create_hexagon(latitude, longitude, area_in_ha)
+
+    polygon = mapping(hex_polygon)
+    return polygon
+
+
+def calculate_yearly_tree_cover_loss(farm):
+    """Calculate yearly tree cover loss of farms"""
+    
+    if "geometry" in farm.geo_json:
+        # Create a ForestAnalyzer object with the farm's geometry
+        analyzer_10 = ForestAnalyzer(
+            geo_json=farm.geo_json['geometry'], canopy_dens=10)
+        analyzer_30 = ForestAnalyzer(geo_json=farm.geo_json['geometry'])
+    else:
+        raise ValueError("Invalid geo json")
+    create_farm_properties(farm, analyzer_30)
+    create_yearly_tree_cover_loss(farm, analyzer_10, analyzer_30)
+    return

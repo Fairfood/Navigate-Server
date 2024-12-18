@@ -182,4 +182,3 @@ class BatchViewSet(CustomScopeViewset):
         
         # Call the list method of the superclass and return the result
         return super().list(request, *args, **kwargs)
-

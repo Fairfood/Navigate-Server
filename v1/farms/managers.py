@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import Sum, Avg
+from django.db.models import Sum, Avg, Count
 from v1.templates.deforestation.analysis import Methods
 
 FarmFilter = {
@@ -85,10 +85,10 @@ class FarmQuerySet(models.QuerySet):
             >>> group_summary_by_criteria('method_name')
             <QuerySet [{'name': 'criteria_name', 'value': 123}, ...]>
         """
-        DeforestationSummary = self.model.deforestation_summaries.field.model
-        queryset = DeforestationSummary.objects.filter(
+        YearlyTreeCoverLoss = self.model.yearly_tree_cover_losses.field.model
+        queryset = YearlyTreeCoverLoss.objects.filter(
             farm__in=self, **FarmFilter[method])
-        return queryset.values('name').annotate(value=Sum('value'))
+        return queryset.aggregate(sum=Sum('value'), count=Count('value'))
     
     def filter_by_request(self, request):
         """
@@ -134,13 +134,15 @@ class FarmQuerySet(models.QuerySet):
             self = self.filter(farmer__company_id=company)
         if supply_chain:
             self = self.filter(farmer__supply_chains__id=supply_chain)
-        if criteria:
-            self = self.filter(deforestation_summaries__name=criteria)
+
+        YearlyTreeCoverLoss = self.model.yearly_tree_cover_losses.field.model
+        queryset = YearlyTreeCoverLoss.objects.filter(
+            farm__in=self)
+        self = self.filter(yearly_tree_cover_losses__in=queryset)
+        
         if method and method in FarmFilter:
-            DSModel = self.model.deforestation_summaries.field.model
-            queryset = DSModel.objects.filter(
-                farm__in=self, **FarmFilter[method])
-            self = self.filter(deforestation_summaries__in=queryset)
+            queryset = queryset.filter(**FarmFilter[method])
+            self = self.filter(yearly_tree_cover_losses__in=queryset)
         return self
         
 class FarmCommentQuerySet(models.QuerySet):

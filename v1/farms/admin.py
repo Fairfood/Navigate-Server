@@ -3,7 +3,7 @@ from django.contrib import admin
 from .models import Farm
 from .models import FarmProperty
 from .models import FarmComment
-from .models import DeforestationSummary
+from .models import YearlyTreeCoverLoss
 
 @admin.register(Farm)
 class FarmAdmin(admin.ModelAdmin):
@@ -28,10 +28,11 @@ class FarmCommentAdmin(admin.ModelAdmin):
     """
     pass
 
-@admin.register(DeforestationSummary)
-class DeforestationSummaryAdmin(admin.ModelAdmin):
+@admin.register(YearlyTreeCoverLoss)
+class YearlyTreeCoverLossAdmin(admin.ModelAdmin):
     """
     Admin class for managing the DeforestationSummary model in the Django 
     admin interface.
     """
-    pass
+
+    list_display = ['farm', 'canopy_density', 'year']
