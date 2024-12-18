@@ -1,11 +1,15 @@
 from django.db import transaction
 from rest_framework import serializers
+
+from base.fields import SerializableRelatedField
 from base.serializers import IDModelSerializer
 
-from .models.nodes import Company, Farmer, SupplyChain
-from .models.batches import Batch
-from ..farms.serializers import FarmSerializer
 from ..farms.models import Farm
+from ..farms.serializers import FarmSerializer
+from .models.accounts import User
+from .models.batches import Batch
+from .models.nodes import Company, Farmer, SupplyChain
+
 
 class SupplyChainSerializer(IDModelSerializer):
     """
@@ -108,3 +112,9 @@ class BatchSerializer(IDModelSerializer):
                 name=supply_chain_name)
             return instance
         return None
+
+class UserSerializer(serializers.ModelSerializer):
+    id = SerializableRelatedField(read_only=True)
+    class Meta:
+        model = User
+        fields = ('id', 'first_name', 'last_name', 'email',)

@@ -1,17 +1,17 @@
-from rest_framework import viewsets
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
+from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.exceptions import ValidationError
 
 from base import session
-from .models.nodes import Company, SupplyChain
+
+from . import filters
 from .models.accounts import User
-from .models.nodes import Farmer
 from .models.batches import Batch
-from .serializers import CompanySerializer, SupplyChainSerializer
-from .serializers import FarmerSerializer
-from .serializers import BatchSerializer
+from .models.nodes import Company, Farmer, SupplyChain
+from .serializers import (BatchSerializer, CompanySerializer, FarmerSerializer,
+                          SupplyChainSerializer, UserSerializer)
+
 
 class CompanyViewSet(viewsets.ModelViewSet):
     """
@@ -131,6 +131,20 @@ class FarmerViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         return Response('Data created.', status=status.HTTP_201_CREATED)
+
+
+class UserDetailsView(RetrieveAPIView):
+    permission_classes = []
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
+class UserSearchByEmailView(RetrieveAPIView):
+    permission_classes = []
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    lookup_field = 'email'
+
 
 class BatchViewSet(viewsets.ModelViewSet):
     """

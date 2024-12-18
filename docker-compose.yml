@@ -2,6 +2,7 @@ services:
   navigate-django:
     container_name: navigate-django
     build: .
+    image: navigate-django
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/usr/src/app/
@@ -9,6 +10,7 @@ services:
       - "8000:8000"
     environment:
       - CREATE_SUPER_USER=true
+      - INSTALL_REQUIREMENTS=false
     env_file:
       - .env
     depends_on:
@@ -47,6 +49,7 @@ services:
   navigate-celery:
     container_name: navigate-celery
     build: .
+    image: navigate-django
     command: celery -A navigate worker -l info
     volumes:
       - ./:/usr/src/app/
@@ -60,6 +63,7 @@ services:
   navigate-celerybeat:
     container_name: navigate-celerybeat
     build: .
+    image: navigate-django
     command: celery -A navigate beat -l info
     volumes:
       - ./:/usr/src/app/

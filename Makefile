@@ -80,3 +80,7 @@ build-django: # Build the Django service without cache
 .PHONY: down
 down: # Bring down the local environment
 	docker compose -f docker-compose.yml down
+
+.PHONY: connect-django
+connect-django: # Connect django project environment
+	docker exec -it navigate-django bash

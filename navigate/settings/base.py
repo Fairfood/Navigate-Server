@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+
+import crontab
 import sentry_sdk
 
 from . import env
@@ -259,3 +261,15 @@ sentry_sdk.init(
     profiles_sample_rate=1.0,
     environment=ENVIRONMENT,
 )
+
+#earth engine
+EE_SERVICE_ACCOUNT = env.get("EE_SERVICE_ACCOUNT", default="")
+EE_SERVICE_ACCOUNT_CREDENTIAL_PATH = env.get("EE_SERVICE_ACCOUNT_CREDENTIAL_PATH", default="")
+
+
+CELERY_BEAT_SCHEDULE = {
+    "analysis_sync": {
+        "task": "send_out_reminder_emails",
+        "schedule": crontab(hour=7, minute=0),
+    }
+}

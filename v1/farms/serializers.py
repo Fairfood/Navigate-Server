@@ -1,9 +1,14 @@
-from base import serializers
 from rest_framework import serializers as base_serializers
-from .models import Farm
-from .models import FarmComment
-from ..supply_chains.models.nodes import Farmer
-from scripts import load_dummy_data
+
+from base import serializers
+from v1.farms import tasks
+from v1.farms.models import Farm, FarmComment
+from v1.supply_chains.models.analysis import AnalysisQueue
+from v1.supply_chains.models.nodes import Farmer
+
+# from scripts import load_dummy_data
+
+
 
 class FarmSerializer(serializers.IDModelSerializer):
     """
@@ -27,8 +32,7 @@ class FarmSerializer(serializers.IDModelSerializer):
             Farm: The newly created Farm instance.
         """
         instance = super().create(validated_data)
-        load_dummy_data.create_farm_properties(instance)
-        load_dummy_data.create_deforestation_summery(instance)
+        AnalysisQueue.objects.create(farm=instance)
         return instance
 
 
