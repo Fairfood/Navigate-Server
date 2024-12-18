@@ -41,7 +41,6 @@ class ForestAnalyzer():
             canopy_dens (int): The canopy density threshold.
 
         """
-        print('Initing analyzer')
 
         credentials = ee.ServiceAccountCredentials(settings.EE_SERVICE_ACCOUNT, settings.EE_SERVICE_ACCOUNT_CREDENTIAL_PATH)
         ee.Initialize(credentials)
@@ -54,13 +53,15 @@ class ForestAnalyzer():
 
         if geo_json["type"] == "Point":
             #converting point to polygon while analysing
-            geo_geometry = HexagonUtils().coord_to_poly(geo_json["coordinates"][0], geo_json["coordinates"][1])
+            geo_geometry = HexagonUtils().coord_to_poly(
+                geo_json["coordinates"][0], geo_json["coordinates"][1])
             # self.polygon = ee.Geometry.Point(geo_json["coordinates"])
             self.polygon = ee.Geometry.Polygon(geo_geometry["coordinates"][0])
         elif geo_json["type"] == "Polygon":
             self.polygon = ee.Geometry.Polygon(geo_json["coordinates"][0])
         else:
-            raise ValueError("Invalid geojson data, Only Point and Polygon are supported.")
+            raise ValueError(
+                "Invalid geojson data, Only Point and Polygon are supported.")
         self.buffer_area = buffer_area
         self.canopy_dens = canopy_dens
         self._buffer_poly = self.polygon
@@ -153,14 +154,18 @@ class ForestAnalyzer():
 
     def calculate_yearly_tree_cover_loss(self):
         """
-        Calculates the total tree cover loss for each year within the specified polygon.
-        This function processes the 'lossyear' band from the dataset to determine the year of tree cover loss,
-        creates a binary mask to indicate areas of loss, and sums up the area of loss for each year.
-        The areas of loss are converted from square meters to hectares .
+        Calculates the total tree cover loss for each year within the 
+        specified polygon.This function processes the 'lossyear' band 
+        from the dataset to determine the year of tree cover loss, 
+        creates a binary mask to indicate areas of loss, and sums up the 
+        area of loss for each year.The areas of loss are converted 
+        from square meters to hectares .
 
         Returns:
-            list of dict: Each dictionary contains the year and the corresponding tree cover loss area in hectares.
+            list of dict: Each dictionary contains the year and the 
+            corresponding tree cover loss area in hectares.
         """
+
         # Select the 'lossyear' band which indicates the year of tree cover loss.
         loss_image = self.dataset_tree_cover.select(["loss"])
         tree_cover = self.dataset_tree_cover.select(["treecover2000"])
