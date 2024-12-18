@@ -1,11 +1,11 @@
-from rest_framework import status, viewsets
+from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
 
 from base import session
+from base.request_handler import CustomScopeViewset
 
-from . import filters
 from .models.accounts import User
 from .models.batches import Batch
 from .models.nodes import Company, Farmer, SupplyChain
@@ -13,12 +13,13 @@ from .serializers import (BatchSerializer, CompanySerializer, FarmerSerializer,
                           SupplyChainSerializer, UserSerializer)
 
 
-class CompanyViewSet(viewsets.ModelViewSet):
+class CompanyViewSet(CustomScopeViewset):
     """
     A viewset for managing Company objects.
     """
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
+    resource_types = ['company']
 
     def get_queryset(self):
         """
@@ -114,13 +115,14 @@ class CompanyViewSet(viewsets.ModelViewSet):
             return serializer.save()
         
 
-class FarmerViewSet(viewsets.ModelViewSet):
+class FarmerViewSet(CustomScopeViewset):
     """
     A viewset for managing Farmer objects.
     """
     queryset = Farmer.objects.all()
     serializer_class = FarmerSerializer
-    # filterset_fields = ('company',)
+    # et_fields = ('company',)
+    resource_types = ['farmer']
 
     @action(methods=['post'], detail=False, url_path='bulk-create')
     def bulk_create(self, request):
@@ -146,12 +148,13 @@ class UserSearchByEmailView(RetrieveAPIView):
     lookup_field = 'email'
 
 
-class BatchViewSet(viewsets.ModelViewSet):
+class BatchViewSet(CustomScopeViewset):
     """
     A viewset for managing Batch objects.
     """
     queryset = Batch.objects.all()
     serializer_class = BatchSerializer
+    resource_types = ['batch']
 
     def list(self, request, *args, **kwargs):
         """
