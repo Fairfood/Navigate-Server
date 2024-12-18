@@ -294,5 +294,6 @@ OAUTH2_PROVIDER = {
         "create:batch": "Create Batch",
         "update:batch": "Update Batch",
         "delete:batch": "Delete Batch",
+        "read:user": "Read User",
     },
  }

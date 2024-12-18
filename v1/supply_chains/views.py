@@ -113,7 +113,7 @@ class CompanyViewSet(CustomScopeViewset):
             serializer = SupplyChainSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             return serializer.save()
-        
+
 
 class FarmerViewSet(CustomScopeViewset):
     """
@@ -136,16 +136,16 @@ class FarmerViewSet(CustomScopeViewset):
 
 
 class UserDetailsView(RetrieveAPIView):
-    permission_classes = []
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    resource_types = ['user']
 
 
 class UserSearchByEmailView(RetrieveAPIView):
-    permission_classes = []
     queryset = User.objects.all()
     serializer_class = UserSerializer
     lookup_field = 'email'
+    resource_types = ['user']
 
 
 class BatchViewSet(CustomScopeViewset):
