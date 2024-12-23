@@ -1,11 +1,11 @@
-from django.contrib.auth.admin import UserAdmin
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
 
 from .models.accounts import User
+from .models.analysis import AnalysisQueue
 from .models.batches import Batch
-from .models.nodes import SupplyChain
-from .models.nodes import Company
-from .models.nodes import Farmer
+from .models.nodes import Company, Farmer, SupplyChain
+
 
 @admin.register(User)
 class NavigateUserAdmin(UserAdmin):
@@ -45,3 +45,11 @@ class FarmerAdmin(admin.ModelAdmin):
     Admin class for managing farmers.
     """
     pass
+
+@admin.register(AnalysisQueue)
+class AnalysisQueueAdmin(admin.ModelAdmin):
+    """
+    Admin class for managing AnalysisQueue.
+    """
+    pass
+

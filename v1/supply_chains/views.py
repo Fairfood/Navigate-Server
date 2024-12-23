@@ -32,7 +32,7 @@ class CompanyViewSet(CustomScopeViewset):
             QuerySet: The filtered queryset.
         """
         queryset = super().get_queryset()
-        if self.request.user.is_authenticated:
+        if self.request.user.is_authenticated and not self.request.user.is_staff:
             return queryset.filter(users=self.request.user)
         return queryset
 

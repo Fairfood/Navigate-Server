@@ -16,7 +16,7 @@ class AnalysisQueue(AbstractBaseModel):
         supply_chain (ForeignKey): The supply chain to which the batch belongs.
     """
 
-    farm = models.ManyToManyField(Farm, related_name="analysis_queue")
+    farm = models.ForeignKey(Farm, related_name="analysis_queue", on_delete=models.CASCADE)
     status = models.IntegerField(
         choices=constants.SyncStatus.choices, 
         default=constants.SyncStatus.IN_QUEUE)

@@ -58,7 +58,8 @@ class FarmerSerializer(IDModelSerializer):
         instance = super().create(validated_data)
         for farm in farms:
             farm['farmer'] = instance
-        self.fields["farms"].create(farms)
+        if farms:
+            self.fields["farms"].create(farms)
         if supply_chain:
             instance.add_supply_chain(supply_chain)
         return instance
@@ -70,7 +71,8 @@ class FarmerSerializer(IDModelSerializer):
         instance = super().update(instance, validated_data)
         for farm in farms:
             farm['farmer'] = instance
-        self.fields["farms"].create(farms)
+        if farms:
+            self.fields["farms"].create(farms)
         if supply_chain:
             instance.add_supply_chain(supply_chain)
         return instance
