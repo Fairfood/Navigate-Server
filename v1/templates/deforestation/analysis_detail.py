@@ -6,6 +6,8 @@ from collections import defaultdict
 
 from ...farms.constants import Pillers
 from .analysis import Methods
+from v1.farms import models as farm_models
+
 
 def round_off(value):
     if type(value) == float:
@@ -13,7 +15,11 @@ def round_off(value):
     return value
 
 def get_data(queryset):
-    queryset = queryset.filter(property__isnull=False)
+    tree_cover_losses = farm_models.YearlyTreeCoverLoss.objects.filter(
+        farm__in=queryset)
+    queryset = queryset.filter(
+        property__isnull=False, 
+        yearly_tree_cover_losses__in=tree_cover_losses)
     data = queryset.annotate(
         comments_count=Count(
             'comments', 

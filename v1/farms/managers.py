@@ -135,10 +135,10 @@ class FarmQuerySet(models.QuerySet):
         if supply_chain:
             self = self.filter(farmer__supply_chains__id=supply_chain)
 
-        YearlyTreeCoverLoss = self.model.yearly_tree_cover_losses.field.model
-        queryset = YearlyTreeCoverLoss.objects.filter(
-            farm__in=self)
-        self = self.filter(yearly_tree_cover_losses__in=queryset)
+        # YearlyTreeCoverLoss = self.model.yearly_tree_cover_losses.field.model
+        # queryset = YearlyTreeCoverLoss.objects.filter(
+        #     farm__in=self)
+        # self = self.filter(yearly_tree_cover_losses__in=queryset)
         
         if method and method in FarmFilter:
             queryset = queryset.filter(**FarmFilter[method])
