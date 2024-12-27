@@ -343,3 +343,13 @@ def calculate_yearly_tree_cover_loss(farm):
     create_farm_properties(farm, analyzer_30)
     create_yearly_tree_cover_loss(farm, analyzer_10, analyzer_30)
     return
+
+
+def calculate_all_farms_tree_cover_loss():
+    """Calculate tree cover loss for all farms"""
+
+    from v1.farms.models import Farm
+
+    for farm in Farm.objects.all():
+        calculate_yearly_tree_cover_loss(farm)
+    return
