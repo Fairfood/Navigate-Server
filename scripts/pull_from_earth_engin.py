@@ -4,10 +4,12 @@ from shapely.geometry import Polygon, mapping
 from shapely.ops import transform
 from pyproj import Transformer
 from django.apps import apps
+from django.conf import settings
 from v1.farms.models import YearlyTreeCoverLoss
 
-ee.Initialize()
-
+credentials = ee.ServiceAccountCredentials(
+    settings.EE_SERVICE_ACCOUNT, settings.EE_SERVICE_ACCOUNT_CREDENTIAL_PATH)
+ee.Initialize(credentials)
 
 class ForestAnalyzer():
     """
