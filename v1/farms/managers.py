@@ -3,7 +3,7 @@ from django.db.models import Sum, Avg, Count
 from v1.templates.deforestation.analysis import Methods
 
 FarmFilter = {
-    Methods.RAINFOREST_ALLIENCE: {
+    Methods.RAINFOREST_ALLIANCE: {
         "year__gte": 2014,
         "canopy_density__gte": 10,
     },
