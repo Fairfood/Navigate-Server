@@ -10,7 +10,9 @@ class FarmAdmin(admin.ModelAdmin):
     """
     Admin class for managing the Farm model in the Django admin interface.
     """
-    pass
+
+    search_fields = ['external_id']
+    list_filter = ['farmer']
 
 @admin.register(FarmProperty)
 class FarmPropertyAdmin(admin.ModelAdmin):
