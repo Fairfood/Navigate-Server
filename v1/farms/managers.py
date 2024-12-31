@@ -66,8 +66,8 @@ class FarmQuerySet(models.QuerySet):
         """
         tree_cover = self.aggregate(
             tree_cover_extent=Sum('property__tree_cover_extent')
-        )["tree_cover_extent"]
-        total_area = self.total_area()
+        )["tree_cover_extent"] or 0
+        total_area = self.total_area() or 0
         return self.calc_percentage(tree_cover, total_area)
     
     def protected_area(self):
