@@ -24,6 +24,15 @@ class FarmQuerySet(models.QuerySet):
     This QuerySet provides additional methods for annotating farms with various 
     calculated fields.
     """
+
+    def calc_percentage(self, num, denum):
+        if denum == 0:
+            return 0
+        percen = round((num * 100 / denum), 2)
+        if percen > 100:
+            return 100
+        return percen
+
     def total_area(self):
         """
         Annotates farms with the total area of their properties.
@@ -55,9 +64,11 @@ class FarmQuerySet(models.QuerySet):
         QuerySet: A QuerySet of farms annotated with the 'tree_cover_extent' 
             field.
         """
-        return self.aggregate(
-            tree_cover_extent=Avg('property__tree_cover_extent')
-            )["tree_cover_extent"]
+        tree_cover = self.aggregate(
+            tree_cover_extent=Sum('property__tree_cover_extent')
+        )["tree_cover_extent"]
+        total_area = self.total_area()
+        return self.calc_percentage(tree_cover, total_area)
     
     def protected_area(self):
         """
@@ -140,9 +151,9 @@ class FarmQuerySet(models.QuerySet):
         #     farm__in=self)
         # self = self.filter(yearly_tree_cover_losses__in=queryset)
         
-        if method and method in FarmFilter:
-            queryset = queryset.filter(**FarmFilter[method])
-            self = self.filter(yearly_tree_cover_losses__in=queryset)
+        # if method and method in FarmFilter:
+        #     queryset = queryset.filter(**FarmFilter[method])
+        #     self = self.filter(yearly_tree_cover_losses__in=queryset)
         return self
         
 class FarmCommentQuerySet(models.QuerySet):

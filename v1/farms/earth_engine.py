@@ -1,7 +1,8 @@
 import ee
 from django.conf import settings
 from sentry_sdk import capture_exception
-
+from shapely.ops import transform
+from pyproj import Transformer
 from .utils import HexagonUtils
 
 # Define the polygon coordinates for the analysis
@@ -211,3 +212,25 @@ class ForestAnalyzer():
             loss_sum = item['sum']
             formatted_data[f"20{year:02d}"] = loss_sum
         return formatted_data
+
+    def calculate_area(self, geo_json):
+        # Define a transformer to convert from WGS84 (lat/lon) to a
+        # projected coordinate system (e.g., UTM)
+        # Use an appropriate UTM zone for the region. For example,
+        # EPSG:32648 is for UTM zone 48N.
+
+        from shapely.geometry import shape
+
+        polygon = shape(geo_json)
+        transformer = Transformer.from_crs(
+            "epsg:4326", "epsg:32648", always_xy=True)
+
+        # Transform the polygon to the projected coordinate system (e.g., UTM)
+        projected_polygon = transform(transformer.transform, polygon)
+
+        # Calculate the area in square meters
+        area_sqm = projected_polygon.area
+
+        # Convert square meters to hectares (1 hectare = 10,000 square meters)
+        area_ha = area_sqm / 10000
+        return area_ha

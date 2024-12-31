@@ -14,9 +14,12 @@ def round_off(value):
         value = round(value, 2)
     return value
 
-def get_data(queryset):
+def get_data(queryset, method):
     tree_cover_losses = farm_models.YearlyTreeCoverLoss.objects.filter(
         farm__in=queryset)
+    from v1.farms.managers import FarmFilter
+    if method and method in FarmFilter:
+        tree_cover_losses = tree_cover_losses.filter(**FarmFilter[method])
     queryset = queryset.filter(
         property__isnull=False, 
         yearly_tree_cover_losses__in=tree_cover_losses)
