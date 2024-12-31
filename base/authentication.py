@@ -230,8 +230,17 @@ class JWTAuthentication(BaseAuthentication):
     def set_session(self, user):
         """Sets the user and company IDs to the session."""
         session.set_to_local("user_id", user.pk.hashid)
-        session.set_to_local("company_id", 
-                             self.request.session.get("nodes")[0])
+
+        entity_id = self.request.headers.get('Entity-ID')
+        if not entity_id:
+            session.set_to_local(
+                "company_id", self.request.session.get("nodes")[0])
+        if entity_id not in self.request.session.get("nodes"):
+            raise exceptions.AuthenticationFailed(
+                f"Invalid Entity ID: {entity_id}"
+            )
+        session.set_to_local("company_id", entity_id)
+
         
 
 class SwitchJWTAuthentication(JWTAuthentication):
