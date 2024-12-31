@@ -206,6 +206,27 @@ class ForestAnalyzer():
             formatted_data[f"20{year:02d}"] = loss_sum
         return formatted_data
 
+    def calculate_area(self, geo_json):
+        # Define a transformer to convert from WGS84 (lat/lon) to a
+        # projected coordinate system (e.g., UTM)
+        # Use an appropriate UTM zone for the region. For example,
+        # EPSG:32648 is for UTM zone 48N.
+
+        from shapely.geometry import shape
+
+        polygon = shape(geo_json)
+        transformer = Transformer.from_crs(
+            "epsg:4326", "epsg:32648", always_xy=True)
+
+        # Transform the polygon to the projected coordinate system (e.g., UTM)
+        projected_polygon = transform(transformer.transform, polygon)
+
+        # Calculate the area in square meters
+        area_sqm = projected_polygon.area
+
+        # Convert square meters to hectares (1 hectare = 10,000 square meters)
+        area_ha = area_sqm / 10000
+        return area_ha
 
 def create_farm_properties(farm, analyzer):
     """
@@ -228,7 +249,7 @@ def create_farm_properties(farm, analyzer):
     # Prepare the data for creating the FarmProperty object
     data = {
         "farm": farm,
-        "total_area": analyzer._buffer_poly.area().getInfo()/10000,
+        "total_area": analyzer.calculate_area(farm.geo_json['geometry']),
         "primary_forest_area": analyzer.calculate_primary_forest(),
         "tree_cover_extent": analyzer.calculate_tree_cover(),
         "protected_area": analyzer.calculate_protected_area()
@@ -342,7 +363,7 @@ def calculate_yearly_tree_cover_loss(farm):
         analyzer_30 = ForestAnalyzer(geo_json=farm.geo_json['geometry'])
     else:
         raise ValueError("Invalid geo json")
-    create_farm_properties(farm, analyzer_30)
+    create_farm_properties(farm, analyzer_10)
     create_yearly_tree_cover_loss(farm, analyzer_10, analyzer_30)
     return
 
