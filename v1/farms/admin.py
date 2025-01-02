@@ -37,4 +37,5 @@ class YearlyTreeCoverLossAdmin(admin.ModelAdmin):
     admin interface.
     """
 
-    list_display = ['farm', 'canopy_density', 'year']
+    list_display = ['farm', 'canopy_density', 'year', 'value']
+    list_filter = ['canopy_density']

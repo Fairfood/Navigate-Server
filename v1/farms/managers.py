@@ -5,15 +5,15 @@ from v1.templates.deforestation.analysis import Methods
 FarmFilter = {
     Methods.RAINFOREST_ALLIANCE: {
         "year__gte": 2014,
-        "canopy_density__gte": 10,
+        "canopy_density": 10,
     },
     Methods.FAIRTRADE: {
         "year__gte": 2019,
-        "canopy_density__gte": 10,
+        "canopy_density": 10,
     },
     Methods.EUDR: {
         "year__gte": 2020,
-        "canopy_density__gte": 30,
+        "canopy_density": 30,
     },
 }
 

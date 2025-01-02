@@ -28,7 +28,7 @@ def get_data(queryset):
             },
             {
                 "name": "Tree Cover Extent",
-                "value": round(queryset.tree_cover_extent() or 0,2)
+                "value": f"{round(queryset.tree_cover_extent() or 0,2)}%"
             },
             {
                 "name": "Primary Forest",
