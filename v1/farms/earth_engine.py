@@ -24,7 +24,7 @@ class ForestAnalyzer():
     """
     polygon = None
     buffer_area = 0
-    canpoy_dens = 30
+    canopy_dens = 30
     _buffer_poly = None
 
 
@@ -173,9 +173,9 @@ class ForestAnalyzer():
         loss_year = self.dataset_tree_cover.select(["lossyear"])
 
         # Mask the loss image to only consider areas with tree
-        # canopy density > self.canpoy_dens
+        # canopy density > self.canopy_dens
         loss = loss_image.updateMask(
-            tree_cover.gte(self.canpoy_dens))
+            tree_cover.gte(self.canopy_dens))
 
         # Calculate area of loss in hectares for high-density areas
         loss_area = loss.multiply(

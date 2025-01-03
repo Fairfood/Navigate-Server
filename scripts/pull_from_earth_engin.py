@@ -27,7 +27,7 @@ class ForestAnalyzer():
     """
     polygon = None
     buffer_area = 0
-    canpoy_dens = 30
+    canopy_dens = 30
     _buffer_poly = None
     dataset_tree_cover = ee.Image(
         "UMD/hansen/global_forest_change_2023_v1_11")
@@ -166,9 +166,9 @@ class ForestAnalyzer():
         loss_year = self.dataset_tree_cover.select(["lossyear"])
 
         # Mask the loss image to only consider areas with tree
-        # canopy density > self.canpoy_dens
+        # canopy density > self.canopy_dens
         loss = loss_image.updateMask(
-            tree_cover.gte(self.canpoy_dens))
+            tree_cover.gte(self.canopy_dens))
 
         # Calculate area of loss in hectares for high-density areas
         loss_area = loss.multiply(
@@ -363,7 +363,7 @@ def calculate_yearly_tree_cover_loss(farm):
         analyzer_30 = ForestAnalyzer(geo_json=farm.geo_json['geometry'])
     else:
         raise ValueError("Invalid geo json")
-    create_farm_properties(farm, analyzer_10)
+    create_farm_properties(farm, analyzer_30)
     create_yearly_tree_cover_loss(farm, analyzer_10, analyzer_30)
     return
 

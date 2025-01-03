@@ -34,7 +34,7 @@ def create_farm_properties(farm_id: Union[int, None] = None):
         if "geometry" in farm.geo_json:
             # Create a ForestAnalyzer object with the farm's geometry
             analyzer = ForestAnalyzer(
-                geo_json=farm.geo_json["geometry"], canopy_dens=10)
+                geo_json=farm.geo_json["geometry"])
         else:
             raise ValueError("Invalid geo json")
 
