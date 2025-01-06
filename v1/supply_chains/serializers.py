@@ -11,6 +11,9 @@ from v1.dashboard.models import Theme
 from .models.accounts import User
 from .models.batches import Batch
 from .models.nodes import Company, Farmer, SupplyChain
+from .models.analysis import AnalysisQueue
+from .constants import SyncStatus
+
 
 class SupplyChainSerializer(IDModelSerializer):
     """
@@ -137,13 +140,14 @@ class UserInfoSerializer(IDModelSerializer):
     default_company = serializers.SerializerMethodField()
     companies = BasicCompanySerializer(many=True, read_only=True)
     theme = serializers.SerializerMethodField()
+    uncalculated_farms = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = [
             'id', 'username', 'first_name', 'last_name', 'email', 
             'profile_image', 'sso_id', 'default_company', 'companies', 
-            'theme'
+            'theme', 'uncalculated_farms'
         ]
 
     def get_default_company(self, obj):
@@ -159,3 +163,14 @@ class UserInfoSerializer(IDModelSerializer):
         if not theme:
             theme = Theme.objects.filter(public_theme=True).last()
         return theme.id
+    
+    def get_uncalculated_farms(self, obj):
+        """
+        Get uncalculated farms. ie, farms whose yearly tree cover loss is 
+        not calculated.
+        """
+
+        farm_count = AnalysisQueue.objects.filter(
+            farm__farmer__company=get_current_company(), 
+            status=SyncStatus.IN_QUEUE).count()
+        return farm_count
