@@ -271,7 +271,7 @@ EE_SERVICE_ACCOUNT_CREDENTIAL_PATH = env.get("EE_SERVICE_ACCOUNT_CREDENTIAL_PATH
 CELERY_BEAT_SCHEDULE = {
     "analysis_sync": {
         "task": "send_out_reminder_emails",
-        "schedule": crontab(hour=7, minute=0),
+        "schedule": crontab(hour=1, minute=0),
     }
 }
 AUTH_TYPE_CLASSES = {
