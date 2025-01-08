@@ -33,14 +33,15 @@ def create_farm_properties(farm_id: Union[int, None] = None):
         # Check if the farm has a geometry field
         if "geometry" in farm.geo_json:
             # Create a ForestAnalyzer object with the farm's geometry
-            analyzer = ForestAnalyzer(geo_json=farm.geo_json["geometry"])
+            analyzer = ForestAnalyzer(
+                geo_json=farm.geo_json["geometry"])
         else:
             raise ValueError("Invalid geo json")
 
         # Prepare the data for creating the FarmProperty object
         data = {
             "farm": farm,
-            "total_area": analyzer._buffer_poly.area().getInfo() / 10000,
+            "total_area": analyzer.calculate_area(farm.geo_json['geometry']),
             "primary_forest_area": analyzer.calculate_primary_forest(),
             "tree_cover_extent": analyzer.calculate_tree_cover(),
             "protected_area": analyzer.calculate_protected_area()

@@ -3,17 +3,17 @@ from django.db.models import Sum, Avg, Count
 from v1.templates.deforestation.analysis import Methods
 
 FarmFilter = {
-    Methods.RAINFOREST_ALLIENCE: {
+    Methods.RAINFOREST_ALLIANCE: {
         "year__gte": 2014,
-        "canopy_density__gte": 10,
+        "canopy_density": 10,
     },
     Methods.FAIRTRADE: {
         "year__gte": 2019,
-        "canopy_density__gte": 10,
+        "canopy_density": 10,
     },
     Methods.EUDR: {
         "year__gte": 2020,
-        "canopy_density__gte": 30,
+        "canopy_density": 30,
     },
 }
 
@@ -24,6 +24,15 @@ class FarmQuerySet(models.QuerySet):
     This QuerySet provides additional methods for annotating farms with various 
     calculated fields.
     """
+
+    def calc_percentage(self, num, denum):
+        if denum == 0:
+            return 0
+        percen = round((num * 100 / denum), 2)
+        if percen > 100:
+            return 100
+        return percen
+
     def total_area(self):
         """
         Annotates farms with the total area of their properties.
@@ -55,9 +64,11 @@ class FarmQuerySet(models.QuerySet):
         QuerySet: A QuerySet of farms annotated with the 'tree_cover_extent' 
             field.
         """
-        return self.aggregate(
-            tree_cover_extent=Avg('property__tree_cover_extent')
-            )["tree_cover_extent"]
+        tree_cover = self.aggregate(
+            tree_cover_extent=Sum('property__tree_cover_extent')
+        )["tree_cover_extent"] or 0
+        total_area = self.total_area() or 0
+        return self.calc_percentage(tree_cover, total_area)
     
     def protected_area(self):
         """
@@ -135,14 +146,14 @@ class FarmQuerySet(models.QuerySet):
         if supply_chain:
             self = self.filter(farmer__supply_chains__id=supply_chain)
 
-        YearlyTreeCoverLoss = self.model.yearly_tree_cover_losses.field.model
-        queryset = YearlyTreeCoverLoss.objects.filter(
-            farm__in=self)
-        self = self.filter(yearly_tree_cover_losses__in=queryset)
+        # YearlyTreeCoverLoss = self.model.yearly_tree_cover_losses.field.model
+        # queryset = YearlyTreeCoverLoss.objects.filter(
+        #     farm__in=self)
+        # self = self.filter(yearly_tree_cover_losses__in=queryset)
         
-        if method and method in FarmFilter:
-            queryset = queryset.filter(**FarmFilter[method])
-            self = self.filter(yearly_tree_cover_losses__in=queryset)
+        # if method and method in FarmFilter:
+        #     queryset = queryset.filter(**FarmFilter[method])
+        #     self = self.filter(yearly_tree_cover_losses__in=queryset)
         return self
         
 class FarmCommentQuerySet(models.QuerySet):

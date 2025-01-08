@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-Methods = models.TextChoices('Methods', 'RAINFOREST_ALLIENCE FAIRTRADE EUDR')
+Methods = models.TextChoices('Methods', 'RAINFOREST_ALLIANCE FAIRTRADE EUDR')
 
 def get_data(queryset):
     """
@@ -23,14 +23,14 @@ def get_data(queryset):
         return 'Acceptable' if all(
             value == 0 for value in values) else 'Not Acceptable'
 
-    rainorest_allience = queryset.group_summary_by_criteria(
-        Methods.RAINFOREST_ALLIENCE)
+    rainorest_alliance = queryset.group_summary_by_criteria(
+        Methods.RAINFOREST_ALLIANCE)
     fairtrade = queryset.group_summary_by_criteria(Methods.FAIRTRADE)
     eudr = queryset.group_summary_by_criteria(Methods.EUDR)
 
     # Impact evaluation per criteria
     impact_data = {
-        'rainorest_allience': rainorest_allience,
+        'rainorest_alliance': rainorest_alliance,
         'fairtrade': fairtrade,
         'eudr': eudr,
     }
@@ -55,7 +55,7 @@ def get_data(queryset):
         "head": [
             {"id": 1, "name": "Criteria"},
             {"id": 2, "name": "Status"},
-            {"id": 3, "name": Methods.RAINFOREST_ALLIENCE,
+            {"id": 3, "name": "RAINFOREST ALLIANCE",
              "info": _("Monitoring tree cover loss in regions with a canopy "
                        "density of 10% or higher, spanning from 2014 to "
                        "present. All instances of even minimal canopy loss "
@@ -77,9 +77,9 @@ def get_data(queryset):
                 "values": [
                     "Tree cover loss area",
                     is_acceptable(
-                        [rainorest_allience['sum'], fairtrade['sum'], 
+                        [rainorest_alliance['sum'], fairtrade['sum'], 
                         eudr['sum']]),
-                    get_value(rainorest_allience['sum']),
+                    get_value(rainorest_alliance['sum']),
                     get_value(fairtrade['sum']),
                     get_value(eudr['sum'])
                 ]
@@ -89,9 +89,9 @@ def get_data(queryset):
                 "values": [
                     "Tree cover loss events",
                     is_acceptable(
-                        [rainorest_allience['count'], fairtrade['count'], 
+                        [rainorest_alliance['count'], fairtrade['count'], 
                          eudr['count']]),
-                    get_value(rainorest_allience['count']),
+                    get_value(rainorest_alliance['count']),
                     get_value(fairtrade['count']),
                     get_value(eudr['count'])
                 ]

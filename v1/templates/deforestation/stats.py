@@ -24,11 +24,11 @@ def get_data(queryset):
         "indexes": [
             {
                 "name": "Number of locations",
-                "value": queryset.values('farmer').distinct().count()
+                "value": queryset.count()
             },
             {
                 "name": "Tree Cover Extent",
-                "value": round(queryset.tree_cover_extent() or 0,2)
+                "value": f"{round(queryset.tree_cover_extent() or 0,2)}%"
             },
             {
                 "name": "Primary Forest",

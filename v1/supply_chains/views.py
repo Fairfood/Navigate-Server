@@ -1,4 +1,5 @@
 from rest_framework import status
+from rest_framework.views import APIView
 from rest_framework.decorators import action
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
@@ -10,7 +11,7 @@ from .models.accounts import User
 from .models.batches import Batch
 from .models.nodes import Company, Farmer, SupplyChain
 from .serializers import (BatchSerializer, CompanySerializer, FarmerSerializer,
-                          SupplyChainSerializer, UserSerializer)
+                          SupplyChainSerializer, UserSerializer, UserInfoSerializer)
 
 
 class CompanyViewSet(CustomScopeViewset):
@@ -182,3 +183,19 @@ class BatchViewSet(CustomScopeViewset):
         
         # Call the list method of the superclass and return the result
         return super().list(request, *args, **kwargs)
+
+class UserInfoView(APIView):
+    """View to return user detials."""
+
+    serializer_class = UserInfoSerializer
+
+    def get(self, request, *args, **kwargs):
+        """
+        Override get method to get user from request and return user 
+        details.
+        """
+
+        user = request.user
+        serialized_data = self.serializer_class(
+            user, context={'request': request}).data
+        return Response(serialized_data, status=status.HTTP_200_OK)
