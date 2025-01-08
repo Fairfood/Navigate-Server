@@ -55,7 +55,7 @@ def get_data(queryset):
         "head": [
             {"id": 1, "name": "Criteria"},
             {"id": 2, "name": "Status"},
-            {"id": 3, "name": Methods.RAINFOREST_ALLIANCE,
+            {"id": 3, "name": "RAINFOREST ALLIANCE",
              "info": _("Monitoring tree cover loss in regions with a canopy "
                        "density of 10% or higher, spanning from 2014 to "
                        "present. All instances of even minimal canopy loss "
