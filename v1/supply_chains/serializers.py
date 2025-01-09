@@ -140,14 +140,15 @@ class UserInfoSerializer(IDModelSerializer):
     default_company = serializers.SerializerMethodField()
     companies = BasicCompanySerializer(many=True, read_only=True)
     theme = serializers.SerializerMethodField()
-    uncalculated_farms = serializers.SerializerMethodField()
+    calculated_farms = serializers.SerializerMethodField()
+    total_farms = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = [
             'id', 'username', 'first_name', 'last_name', 'email', 
             'profile_image', 'sso_id', 'default_company', 'companies', 
-            'theme', 'uncalculated_farms'
+            'theme', 'calculated_farms', 'total_farms'
         ]
 
     def get_default_company(self, obj):
@@ -164,13 +165,22 @@ class UserInfoSerializer(IDModelSerializer):
             theme = Theme.objects.filter(public_theme=True).last()
         return theme.id
     
-    def get_uncalculated_farms(self, obj):
+    def get_calculated_farms(self, obj):
         """
-        Get uncalculated farms. ie, farms whose yearly tree cover loss is 
-        not calculated.
+        Get calculated farms. ie, farms whose yearly tree cover loss is 
+        calculated.
         """
 
-        farm_count = AnalysisQueue.objects.filter(
-            farm__farmer__company=get_current_company(), 
-            status=SyncStatus.IN_QUEUE).count()
+        farm_count = Farm.objects.filter(
+            farmer__company=get_current_company(),
+            analysis_queue__status=SyncStatus.COMPLETED).count()
+        return farm_count
+
+    def get_total_farms(self, obj):
+        """
+        Get total farms under the company
+        """
+
+        farm_count = Farm.objects.filter(
+            farmer__company=get_current_company()).count()
         return farm_count
