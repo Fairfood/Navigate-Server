@@ -130,7 +130,7 @@ def get_data(queryset):
 
     for method in impact_data:
         impact.append({
-            "name": method.capitalize(),
+            "name": method.replace("_", " ").title(),
             "is_passed": impact_status[method],
             "indexes": [
                 {

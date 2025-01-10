@@ -64,7 +64,7 @@ def get_data(queryset, method):
                             "conservation and climate change "
                             "mitigation."),
         "table": {
-            "methods": Methods.values,
+            "methods": ["RAINFOREST ALLIANCE", "FAIRTRADE", "EUDR"],
             "head": [
                 "Polygon ID",
                 "Commodity",
