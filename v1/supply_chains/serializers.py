@@ -75,6 +75,11 @@ class FarmerSerializer(IDModelSerializer):
         instance = super().update(instance, validated_data)
         for farm in farms:
             farm['farmer'] = instance
+            existing_farm = Farm.objects.filter(
+                external_id=farm['external_id']).first()
+            if existing_farm:
+                FarmSerializer().update(existing_farm, farm)
+                farms.remove(farm)
         if farms:
             self.fields["farms"].create(farms)
         if supply_chain:

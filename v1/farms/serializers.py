@@ -34,6 +34,11 @@ class FarmSerializer(serializers.IDModelSerializer):
         instance = super().create(validated_data)
         AnalysisQueue.objects.create(farm=instance)
         return instance
+    
+    def update(self, instance, validated_data):
+        instance = super().update(instance, validated_data)
+        AnalysisQueue.objects.create(farm=instance)
+        return instance
 
 
 class FarmCommentSerializer(serializers.IDModelSerializer):
