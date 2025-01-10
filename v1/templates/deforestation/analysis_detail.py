@@ -5,8 +5,8 @@ from django.db.models import Q, Sum
 from collections import defaultdict
 
 from ...farms.constants import Pillers
-from .analysis import Methods
 from v1.farms import models as farm_models
+from v1.farms.constants import TreeCoverLossStandard
 
 
 def round_off(value):
@@ -14,12 +14,43 @@ def round_off(value):
         value = round(value, 2)
     return value
 
-def get_data(queryset, method):
+tree_cover_loss_methods = {
+    'Rainforest Alliance': 'RAINFOREST_ALLIANCE',
+    'Fairtrade': 'FAIRTRADE',
+    'EUDR': 'EUDR'
+}
+
+def get_description(criteria):
+    description = {
+        'Tree cover loss events': _(
+            "Tree cover loss events describe the reduction of tree canopy due \
+            to factors like deforestation, natural disasters, urban \
+            development, and illegal logging. This leads to significant \
+            environmental impacts, including habitat destruction, \
+            biodiversity loss, and increased carbon emissions, affecting \
+            both local and global climates. Addressing tree cover loss is \
+            vital for environmental conservation and climate change \
+            mitigation."),
+        'Tree cover loss area': _(
+            "Tree cover loss events describe the reduction of tree canopy \
+            due to factors like deforestation, natural disasters, \
+            urban development, and illegal logging. This leads to significant \
+            environmental impacts, including habitat destruction, biodiversity \
+            loss, and increased carbon emissions, affecting both local and \
+            global climates. Addressing tree cover loss is vital for \
+            environmental conservation and climate change mitigation.")
+    }
+    desc = description.get(criteria, '')
+    return desc
+
+def get_data(queryset, method, criteria):
     tree_cover_losses = farm_models.YearlyTreeCoverLoss.objects.filter(
         farm__in=queryset)
     from v1.farms.managers import FarmFilter
-    if method and method in FarmFilter:
-        tree_cover_losses = tree_cover_losses.filter(**FarmFilter[method])
+    tree_cover_method = tree_cover_loss_methods.get(method, 'None')
+    if tree_cover_method and tree_cover_method in FarmFilter:
+        tree_cover_losses = tree_cover_losses.filter(
+            **FarmFilter[tree_cover_method])
     queryset = queryset.filter(
         property__isnull=False, 
         yearly_tree_cover_losses__in=tree_cover_losses)
@@ -50,21 +81,10 @@ def get_data(queryset, method):
         comments_dict[farm].append(comment)
 
     return {
-        "title": _("Tree cover loss events"),
-        "description": _("Tree cover loss events describe the "
-                            "reduction of tree canopy due to factors "
-                            "like deforestation, natural disasters, "
-                            "urban development, and illegal logging. "
-                            "This leads to significant environmental "
-                            "impacts, including habitat destruction, "
-                            "biodiversity loss, and increased carbon "
-                            "emissions, affecting both local and "
-                            "global climates. Addressing tree cover "
-                            "loss is vital for environmental "
-                            "conservation and climate change "
-                            "mitigation."),
+        "title": _(criteria),
+        "description": get_description(criteria),
         "table": {
-            "methods": ["RAINFOREST ALLIANCE", "FAIRTRADE", "EUDR"],
+            "methods": TreeCoverLossStandard.labels,
             "head": [
                 "Polygon ID",
                 "Commodity",

@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from v1.farms.constants import TreeCoverLossStandard
 
-Methods = models.TextChoices('Methods', 'RAINFOREST_ALLIANCE FAIRTRADE EUDR')
 
 def get_data(queryset):
     """
@@ -24,9 +24,10 @@ def get_data(queryset):
             value == 0 for value in values) else 'Not Acceptable'
 
     rainorest_alliance = queryset.group_summary_by_criteria(
-        Methods.RAINFOREST_ALLIANCE)
-    fairtrade = queryset.group_summary_by_criteria(Methods.FAIRTRADE)
-    eudr = queryset.group_summary_by_criteria(Methods.EUDR)
+        TreeCoverLossStandard.RAINFOREST_ALLIANCE)
+    fairtrade = queryset.group_summary_by_criteria(
+        TreeCoverLossStandard.FAIRTRADE)
+    eudr = queryset.group_summary_by_criteria(TreeCoverLossStandard.EUDR)
 
     # Impact evaluation per criteria
     impact_data = {
@@ -55,17 +56,17 @@ def get_data(queryset):
         "head": [
             {"id": 1, "name": "Criteria"},
             {"id": 2, "name": "Status"},
-            {"id": 3, "name": "RAINFOREST ALLIANCE",
+            {"id": 3, "name": TreeCoverLossStandard.RAINFOREST_ALLIANCE.label,
              "info": _("Monitoring tree cover loss in regions with a canopy "
                        "density of 10% or higher, spanning from 2014 to "
                        "present. All instances of even minimal canopy loss "
                        "are considered unacceptable.")},
-            {"id": 4, "name": Methods.FAIRTRADE,
+            {"id": 4, "name": TreeCoverLossStandard.FAIRTRADE.label,
              "info": _("Monitoring tree cover loss in regions with a canopy "
                        "density of 10% or higher, spanning from 2019 to "
                        "the present. All instances of even minimal canopy "
                        "loss are considered unacceptable.")},
-            {"id": 5, "name": Methods.EUDR,
+            {"id": 5, "name": TreeCoverLossStandard.EUDR.label,
              "info": _("Monitoring tree cover loss in regions with a canopy "
                        "density of 30% or higher, spanning from 2020 to "
                        "the present. All instances of even minimal canopy "
@@ -129,8 +130,11 @@ def get_data(queryset):
     ]
 
     for method in impact_data:
+        name = method.replace("_", " ").title()
+        if name == "Eudr":
+            name = name.upper()   
         impact.append({
-            "name": method.replace("_", " ").title(),
+            "name": name,
             "is_passed": impact_status[method],
             "indexes": [
                 {

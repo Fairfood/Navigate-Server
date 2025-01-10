@@ -1,17 +1,19 @@
 from django.db import models
-from django.db.models import Sum, Avg, Count
-from v1.templates.deforestation.analysis import Methods
+from django.db.models import Sum, Avg, Count, FloatField
+from django.db.models.functions import Coalesce, Cast
+from v1.farms.constants import TreeCoverLossStandard
+
 
 FarmFilter = {
-    Methods.RAINFOREST_ALLIANCE: {
+    TreeCoverLossStandard.RAINFOREST_ALLIANCE: {
         "year__gte": 2014,
         "canopy_density": 10,
     },
-    Methods.FAIRTRADE: {
+    TreeCoverLossStandard.FAIRTRADE: {
         "year__gte": 2019,
         "canopy_density": 10,
     },
-    Methods.EUDR: {
+    TreeCoverLossStandard.EUDR: {
         "year__gte": 2020,
         "canopy_density": 30,
     },
@@ -99,7 +101,10 @@ class FarmQuerySet(models.QuerySet):
         YearlyTreeCoverLoss = self.model.yearly_tree_cover_losses.field.model
         queryset = YearlyTreeCoverLoss.objects.filter(
             farm__in=self, **FarmFilter[method])
-        return queryset.aggregate(sum=Sum('value'), count=Count('value'))
+        return queryset.aggregate(
+            sum=Coalesce(Cast(Sum('value'), output_field=FloatField()), 0.0),
+            count=Count('value')
+        )
     
     def filter_by_request(self, request):
         """
