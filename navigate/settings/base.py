@@ -15,6 +15,8 @@ from pathlib import Path
 import sentry_sdk
 from celery.schedules import crontab
 
+from base.utils import get_domain
+
 from . import env
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -29,6 +31,7 @@ ENVIRONMENT = env.get("ENVIRONMENT")
 DEPLOYMENT = env.get("DEPLOYMENT")
 
 ROOT_URL = env.get("ROOT_URL")
+BASE_URL, DOMAIN_NAME = get_domain(ROOT_URL)
 FRONT_ROOT_URL = env.get("FRONT_ROOT_URL")
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -38,7 +41,7 @@ SECRET_KEY = env.get("SECRET_KEY")
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    ROOT_URL,
+    DOMAIN_NAME,
     "localhost",
     "127.0.0.1",
 ]

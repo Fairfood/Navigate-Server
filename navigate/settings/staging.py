@@ -6,11 +6,10 @@ from .base import REST_FRAMEWORK, env
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "v2.staging.api.fairfood.org",
-    "navigate.staging.api.fairfood.org",
+    DOMAIN_NAME
 ]
 
-CORS_ORIGIN_WHITELIST = ("https://v2.staging.api.fairfood.org", "navigate.staging.api.fairfood.org",)
+CORS_ORIGIN_WHITELIST = (BASE_URL,)
 
 
 REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"]["anon"] = "500/min"
