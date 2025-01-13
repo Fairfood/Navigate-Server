@@ -90,7 +90,12 @@ class CompanyViewSet(CustomScopeViewset):
         """
         email = request.data.get("email")
         try:
-            return User.objects.get(email=email)
+            user = User.objects.get(email=email)
+            user_data = request.data
+            for key, value in user_data.items():
+                setattr(user, key, value)
+            user.save()
+            return user
         except User.DoesNotExist:
             return User.objects.create(**request.data)
     
