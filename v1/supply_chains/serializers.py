@@ -48,7 +48,7 @@ class FarmerSerializer(IDModelSerializer):
     """
     Serializer class for the Farmer model.
     """
-    farms = FarmSerializer(many=True)
+    farms = FarmSerializer(many=True, required=False)
     supply_chain_name = serializers.CharField(write_only=True, required=False)
 
     class Meta:
