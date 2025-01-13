@@ -199,6 +199,7 @@ class AnalysisViewSet(viewsets.ViewSet):
         """
         piller = request.GET.get('piller')
         method = request.GET.get('method')
+        criteria = request.GET.get('criteria', '')
         if not piller:
             raise ValidationError("Piller is required.")
         if piller not in Pillers.values:
@@ -207,7 +208,8 @@ class AnalysisViewSet(viewsets.ViewSet):
         queryset = queryset.filter(
             farmer__company=session.get_current_company())
         proccessor = importlib.import_module(template_files[piller])
-        return Response(proccessor.analysis_detail.get_data(queryset, method))
+        return Response(
+            proccessor.analysis_detail.get_data(queryset, method, criteria))
     
 
 
