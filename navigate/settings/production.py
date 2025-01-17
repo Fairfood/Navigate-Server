@@ -1,12 +1,10 @@
-from datetime import timedelta
-
 from .base import *  # noqa
 from .base import REST_FRAMEWORK, env
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
-    DOMAIN_NAME
+    DOMAIN_NAME,
 ]
 
 CORS_ORIGIN_WHITELIST = (BASE_URL,)
@@ -28,5 +26,3 @@ DEFAULT_FILE_STORAGE = "s3_folder_storage.s3.DefaultStorage"
 DEFAULT_S3_PATH = "navigate"
 MEDIA_ROOT = "/%s/" % DEFAULT_S3_PATH
 MEDIA_URL = "//%s.s3.amazonaws.com/navigate/" % AWS_STORAGE_BUCKET_NAME
-
-# SENTRY SETUP AWS_STORAGE_BUCKET_NAME:

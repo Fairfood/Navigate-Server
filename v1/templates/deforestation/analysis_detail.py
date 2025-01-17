@@ -20,28 +20,17 @@ tree_cover_loss_methods = {
     'EUDR': 'EUDR'
 }
 
-def get_description(criteria):
-    description = {
-        'Tree cover loss events': _(
-            "Tree cover loss events describe the reduction of tree canopy due \
-            to factors like deforestation, natural disasters, urban \
-            development, and illegal logging. This leads to significant \
-            environmental impacts, including habitat destruction, \
-            biodiversity loss, and increased carbon emissions, affecting \
-            both local and global climates. Addressing tree cover loss is \
-            vital for environmental conservation and climate change \
-            mitigation."),
-        'Tree cover loss area': _(
-            "Tree cover loss events describe the reduction of tree canopy \
-            due to factors like deforestation, natural disasters, \
-            urban development, and illegal logging. This leads to significant \
-            environmental impacts, including habitat destruction, biodiversity \
-            loss, and increased carbon emissions, affecting both local and \
-            global climates. Addressing tree cover loss is vital for \
-            environmental conservation and climate change mitigation.")
-    }
-    desc = description.get(criteria, '')
-    return desc
+def get_description():
+    description = _(
+        "Tree cover loss events describe the reduction of tree canopy due \
+        to factors like deforestation, natural disasters, urban \
+        development, and illegal logging. This leads to significant \
+        environmental impacts, including habitat destruction, \
+        biodiversity loss, and increased carbon emissions, affecting \
+        both local and global climates. Addressing tree cover loss is \
+        vital for environmental conservation and climate change \
+        mitigation.")
+    return description
 
 def get_data(queryset, method, criteria):
     tree_cover_losses = farm_models.YearlyTreeCoverLoss.objects.filter(
@@ -82,7 +71,7 @@ def get_data(queryset, method, criteria):
 
     return {
         "title": _(criteria),
-        "description": get_description(criteria),
+        "description": get_description(),
         "table": {
             "methods": TreeCoverLossStandard.labels,
             "head": [
