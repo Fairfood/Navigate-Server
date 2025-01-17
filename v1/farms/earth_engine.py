@@ -1,6 +1,7 @@
 import ee
 from django.conf import settings
 from sentry_sdk import capture_exception
+from shapely.geometry import shape
 from shapely.ops import transform
 from pyproj import Transformer
 from .utils import HexagonUtils
@@ -56,9 +57,10 @@ class ForestAnalyzer():
             #converting point to polygon while analysing
             geo_geometry = HexagonUtils().coord_to_poly(
                 geo_json["coordinates"][0], geo_json["coordinates"][1])
-            # self.polygon = ee.Geometry.Point(geo_json["coordinates"])
             self.polygon = ee.Geometry.Polygon(geo_geometry["coordinates"][0])
         elif geo_json["type"] == "Polygon":
+            #handling incorrect polygon
+            geo_json = self.handle_incorrect_polygon(geo_json)
             self.polygon = ee.Geometry.Polygon(geo_json["coordinates"][0])
         else:
             raise ValueError(
@@ -212,6 +214,18 @@ class ForestAnalyzer():
             loss_sum = item['sum']
             formatted_data[f"20{year:02d}"] = loss_sum
         return formatted_data
+    
+    @staticmethod
+    def handle_incorrect_polygon(geo_json):
+        #handling type polygon having only 1 coordinate which are uploaded
+        #via bulk upload
+        if geo_json["type"] == "Polygon" and len(
+            geo_json["coordinates"][0]) == 1:
+            geo_json = HexagonUtils().coord_to_poly(
+                geo_json["coordinates"][0][0][0], 
+                geo_json["coordinates"][0][0][1]
+            )
+        return geo_json
 
     def calculate_area(self, geo_json):
         # Define a transformer to convert from WGS84 (lat/lon) to a
@@ -219,7 +233,8 @@ class ForestAnalyzer():
         # Use an appropriate UTM zone for the region. For example,
         # EPSG:32648 is for UTM zone 48N.
 
-        from shapely.geometry import shape
+        #handling incorrect polygon
+        geo_json = self.handle_incorrect_polygon(geo_json)
 
         polygon = shape(geo_json)
         transformer = Transformer.from_crs(

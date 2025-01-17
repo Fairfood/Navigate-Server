@@ -12,7 +12,7 @@ class FarmAdmin(admin.ModelAdmin):
     """
 
     search_fields = ['external_id']
-    list_filter = ['farmer']
+    list_filter = ['farmer', 'farmer__company']
 
 @admin.register(FarmProperty)
 class FarmPropertyAdmin(admin.ModelAdmin):
