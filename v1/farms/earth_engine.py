@@ -59,13 +59,8 @@ class ForestAnalyzer():
                 geo_json["coordinates"][0], geo_json["coordinates"][1])
             self.polygon = ee.Geometry.Polygon(geo_geometry["coordinates"][0])
         elif geo_json["type"] == "Polygon":
-            #handling type polygon having only 1 coordinate which are uploaded
-            # via bulk upload
-            if len(geo_json["coordinates"][0]) == 1:
-                geo_json = HexagonUtils().coord_to_poly(
-                    geo_json["coordinates"][0][0][0], 
-                    geo_json["coordinates"][0][0][1]
-                )
+            #handling incorrect polygon
+            geo_json = self.handle_incorrect_polygon(geo_json)
             self.polygon = ee.Geometry.Polygon(geo_json["coordinates"][0])
         else:
             raise ValueError(
@@ -219,14 +214,9 @@ class ForestAnalyzer():
             loss_sum = item['sum']
             formatted_data[f"20{year:02d}"] = loss_sum
         return formatted_data
-
-    def calculate_area(self, geo_json):
-        # Define a transformer to convert from WGS84 (lat/lon) to a
-        # projected coordinate system (e.g., UTM)
-        # Use an appropriate UTM zone for the region. For example,
-        # EPSG:32648 is for UTM zone 48N.
-
-
+    
+    @staticmethod
+    def handle_incorrect_polygon(geo_json):
         #handling type polygon having only 1 coordinate which are uploaded
         #via bulk upload
         if geo_json["type"] == "Polygon" and len(
@@ -235,6 +225,16 @@ class ForestAnalyzer():
                 geo_json["coordinates"][0][0][0], 
                 geo_json["coordinates"][0][0][1]
             )
+        return geo_json
+
+    def calculate_area(self, geo_json):
+        # Define a transformer to convert from WGS84 (lat/lon) to a
+        # projected coordinate system (e.g., UTM)
+        # Use an appropriate UTM zone for the region. For example,
+        # EPSG:32648 is for UTM zone 48N.
+
+        #handling incorrect polygon
+        geo_json = self.handle_incorrect_polygon(geo_json)
 
         polygon = shape(geo_json)
         transformer = Transformer.from_crs(
