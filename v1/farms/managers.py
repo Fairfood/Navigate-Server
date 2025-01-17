@@ -54,9 +54,11 @@ class FarmQuerySet(models.QuerySet):
         QuerySet: A QuerySet of farms annotated with the 'primary_forest_area' 
             field.
         """
-        return self.aggregate(
-            primary_forest_area=Avg('property__primary_forest_area')
-            )["primary_forest_area"]
+        primary_forest = self.aggregate(
+            primary_forest_area=Sum('property__primary_forest_area')
+        )["primary_forest_area"] or 0
+        total_area = self.total_area() or 0
+        return self.calc_percentage(primary_forest, total_area)
     
     def tree_cover_extent(self):
         """
@@ -81,7 +83,7 @@ class FarmQuerySet(models.QuerySet):
             field.
         """
         return self.aggregate(
-            protected_area=Avg('property__protected_area')
+            protected_area=Sum('property__protected_area')
             )["protected_area"]
     
     def group_summary_by_criteria(self, method):

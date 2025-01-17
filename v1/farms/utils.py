@@ -93,3 +93,19 @@ class HexagonUtils:
         geojson_output = self.polygon_to_geojson(hex_polygon)
 
         return geojson_output
+
+
+def is_polygon_valid(geo_json):
+    """
+    Checks if the given geo_json represents a valid polygon.
+    
+    Args:
+        geo_json (dict): A GeoJSON object representing the polygon.
+        
+    Returns:
+        bool: True if the polygon is valid, False otherwise.
+    """
+
+    if geo_json["type"] == "Polygon" and not len(geo_json["coordinates"][0]):
+        return False
+    return True

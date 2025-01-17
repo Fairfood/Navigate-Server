@@ -10,6 +10,7 @@ from sentry_sdk import capture_exception, capture_message
 
 from v1.farms.earth_engine import ForestAnalyzer
 from v1.farms.models import Farm, YearlyTreeCoverLoss, FarmProperty
+from v1.farms.utils import is_polygon_valid
 from v1.supply_chains import constants as suply_constants
 from v1.supply_chains.models.analysis import AnalysisQueue
 
@@ -27,29 +28,30 @@ def create_farm_properties(farm_id: Union[int, None] = None):
         None
 
     """
-    
+
     farm = Farm.objects.filter(id=farm_id).first()
     if farm:
         # Check if the farm has a geometry field
-        if "geometry" in farm.geo_json:
-            # Create a ForestAnalyzer object with the farm's geometry
-            analyzer = ForestAnalyzer(
-                geo_json=farm.geo_json["geometry"])
-        else:
-            raise ValueError("Invalid geo json")
+        if "geometry" in farm.geo_json and is_polygon_valid(
+            farm.geo_json["geometry"]):
 
-        # Prepare the data for creating the FarmProperty object
-        data = {
-            "farm": farm,
-            "total_area": analyzer.calculate_area(farm.geo_json['geometry']),
-            "primary_forest_area": analyzer.calculate_primary_forest(),
-            "tree_cover_extent": analyzer.calculate_tree_cover(),
-            "protected_area": analyzer.calculate_protected_area()
-        }
-        
-        # Create FarmProperty object
-        FarmProperty.objects.update_or_create(farm=farm, defaults=data)
-        return True
+            # Create a ForestAnalyzer object with the farm's geometry
+            analyzer = ForestAnalyzer(geo_json=farm.geo_json["geometry"])
+
+            # Prepare the data for creating the FarmProperty object
+            data = {
+                "farm": farm,
+                "total_area": analyzer.calculate_area(farm.geo_json['geometry']),
+                "primary_forest_area": analyzer.calculate_primary_forest(),
+                "tree_cover_extent": analyzer.calculate_tree_cover(),
+                "protected_area": analyzer.calculate_protected_area()
+            }
+            
+            # Create FarmProperty object
+            FarmProperty.objects.update_or_create(farm=farm, defaults=data)
+        else:
+            capture_message(f"Invalid geo json for farm {farm.id}")
+    return True
 
 
 @shared_task(name="create_yearly_tree_cover_loss")
@@ -68,29 +70,31 @@ def create_yearly_tree_cover_loss(farm_id: Union[int, None] = None):
     farm = Farm.objects.filter(id=farm_id).first()
     if farm:
         # Check if the farm has a geometry field
-        if "geometry" in farm.geo_json:
+        if "geometry" in farm.geo_json and is_polygon_valid(
+            farm.geo_json['geometry']):
+            
             # Create a ForestAnalyzer object with the farm's geometry
             analyzer_10 = ForestAnalyzer(
                 geo_json=farm.geo_json['geometry'], canopy_dens=10)
             analyzer_30 = ForestAnalyzer(geo_json=farm.geo_json['geometry'])
+
+            # Calculate yearly tree cover loss for both canopy densities
+            year_data_30 = analyzer_30.calculate_yearly_tree_cover_loss()
+            year_data_10 = analyzer_10.calculate_yearly_tree_cover_loss()
+
+            # Create loss events for both canopy densities
+            for year, value in year_data_30.items():
+                YearlyTreeCoverLoss.objects.update_or_create(
+                    farm=farm, year=year, canopy_density=30, 
+                    defaults={'value':value}
+                )
+            for year, value in year_data_10.items():
+                YearlyTreeCoverLoss.objects.update_or_create(
+                    farm=farm, year=year, canopy_density=10, 
+                    defaults={'value':value}
+                )
         else:
-            raise ValueError("Invalid geo json")
-
-        # Calculate yearly tree cover loss for both canopy densities
-        year_data_30 = analyzer_30.calculate_yearly_tree_cover_loss()
-        year_data_10 = analyzer_10.calculate_yearly_tree_cover_loss()
-
-        # Create loss events for both canopy densities
-        for year, value in year_data_30.items():
-            YearlyTreeCoverLoss.objects.update_or_create(
-                farm=farm, year=year, canopy_density=30, 
-                defaults={'value':value}
-            )
-        for year, value in year_data_10.items():
-            YearlyTreeCoverLoss.objects.update_or_create(
-                farm=farm, year=year, canopy_density=10, 
-                defaults={'value':value}
-            )
+            capture_message(f"Invalid geo json for farm {farm.id}")
     return True
 
 @contextmanager
