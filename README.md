@@ -4,10 +4,14 @@
 
 ## Overview
 
-Naviagate is a platform designed to monitor key areas like deforestation and 
-living income. Users can switch between these categories to track and analyze 
-data for each. The platform provides insights and tools to help manage and 
-address environmental, economic, and social challenges effectively.
+Navigate is an MVP platform designed to monitor key areas like deforestation 
+and living income. Users can switch between these categories to track and 
+analyze data for each. The platform provides insights and tools to help 
+manage and address environmental, economic, and social challenges effectively.
+
+**This is just an MVP and not developed for production use. There are a**
+**lot of areas in which we can improve, which need to be scoped out in detail.**
+
 
 ### Map
 
@@ -93,13 +97,15 @@ fluctuations.
 * This feature enables more tailored and precise data analysis.
 
 
-## How is this calculated
+## How Do We Calculate Deforestation
 
 The ForestAnalyzer class is a wrapper designed to perform forest-related 
-analyses using Google Earth Engine (EE) data. It calculates key statistics 
+analyses using Google Earth Engine (EE) data. it is located in 
+`v1/farms/earth_engine.py`. It calculates key statistics 
 for farm properties, including tree cover, primary forest area, protected 
 areas, and yearly tree cover loss. The analysis is based on geoJSON input 
-representing farm locations (either Point or Polygon).
+representing farm locations (either Point or Polygon). You can find 
+the data souces we are using in the file.
 
 Key features of the ForestAnalyzer include:
 * Tree Cover Analysis: Measures the tree cover area within the farm's polygon, 
