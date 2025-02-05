@@ -1,0 +1,80 @@
+services:
+  navigate-django:
+    container_name: navigate-django
+    build: .
+    image: navigate-django
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/usr/src/app/
+    ports:
+      - "8000:8000"
+    environment:
+      - CREATE_SUPER_USER=true
+      - INSTALL_REQUIREMENTS=false
+    env_file:
+      - .env
+    depends_on:
+      - navigate-postgres
+      - navigate-redis
+    entrypoint: "/usr/src/app/entrypoint.sh"
+
+  navigate-postgres:
+    container_name: navigate-postgres
+    image: postgres:13.0-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    healthcheck:
+      test:
+          ["CMD-SHELL", "pg_isready -d $$POSTGRES_DB -U $$POSTGRES_USER"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+
+  navigate-redis:
+    container_name: navigate-redis
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --save 20 1 --loglevel warning
+    volumes:
+      - redis:/data
+    depends_on:
+      - navigate-postgres
+
+  navigate-celery:
+    container_name: navigate-celery
+    build: .
+    image: navigate-django
+    command: celery -A navigate worker -l info
+    volumes:
+      - ./:/usr/src/app/
+    env_file:
+      - .env
+    depends_on:
+      - navigate-postgres
+      - navigate-redis
+      - navigate-django
+
+  navigate-celerybeat:
+    container_name: navigate-celerybeat
+    build: .
+    image: navigate-django
+    command: celery -A navigate beat -l info
+    volumes:
+      - ./:/usr/src/app/
+    env_file:
+      - .env
+    depends_on:
+      - navigate-postgres
+      - navigate-redis
+      - navigate-django
+
+volumes:
+  postgres_data:
+  redis:
+    driver: local

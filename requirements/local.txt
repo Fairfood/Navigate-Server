@@ -1,0 +1,2 @@
+-r base.txt
+GDAL==3.6.2
