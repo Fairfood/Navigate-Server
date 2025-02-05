@@ -372,7 +372,7 @@ already been reported or discussed.
 Please note that this project follows the [Contributor Covenant Code of Conduct]
 (https://github.com/Fairfood/). 
 By participating, you are expected to uphold this code. Report any unacceptable 
-behavior to [maintainer email].
+behavior to [sudeesh@fairfood.org]
 
 
 ## Review Process
@@ -385,7 +385,7 @@ behavior to [maintainer email].
 ## Contact Information
 
 If you have any questions, suggestions, or feedback, feel free to reach out:
-* Email: [your.email@example.com]
+* Email: [sudeesh@fairfood.org]
 
 You can also open an issue on the [issue tracker]
 (https://github.com/your-username/your-project/issues) for bug reports, 
