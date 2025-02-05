@@ -10,15 +10,18 @@ Team trace app  (sorted alphabetically)
 ---------------------------------------
 Trace mobile team are actively supporting the project and have made substantial contributions to the repository.<br>
 
-* **[Ajas Augustin]**
+* **Ajas Augustin**
    * Junior Backend developer
    * Build project APIs and backend
 * **[Amruthesh K S](https://github.com/eashwerks-fairfood)**
    * Backend developer
    * Build project APIs and backend 
 * **[derekhardwick](https://github.com/derekhardwick)**
-   * Project owner
+   * Product owner
    * Project maintainance and customer support
+* **Dino Solaman**
+   * Junior tester
+   * Project testing and customer support
 * **[Midhun P J](https://github.com/midhunfairfood)**
    * Frondend developer
    * Website cretaion and code reviewer
