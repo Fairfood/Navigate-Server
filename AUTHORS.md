@@ -10,6 +10,9 @@ Team trace app  (sorted alphabetically)
 ---------------------------------------
 Trace mobile team are actively supporting the project and have made substantial contributions to the repository.<br>
 
+* **[Ajas Augustin]**
+   * Junior Backend developer
+   * Build project APIs and backend
 * **[Amruthesh K S](https://github.com/eashwerks-fairfood)**
    * Backend developer
    * Build project APIs and backend 
@@ -25,9 +28,14 @@ Trace mobile team are actively supporting the project and have made substantial 
 * **[Shyno](https://github.com/shynofairfoood)**
    * React native developer
    * Mobile app maintanace and feature implementation
+* **[Shalu Shaji]**
+   * Backend developer
+   * Build project APIs and backend 
 * **[Sudeesh Narayanan](https://github.com/sudeeshnarayanan)**
    * Technical architect
    * Technical support and team lead.
+ 
+     
 
 
 Contributors  (sorted alphabetically)
